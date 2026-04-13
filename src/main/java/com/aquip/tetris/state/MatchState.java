@@ -38,4 +38,8 @@ public class MatchState {
         }
         return null;
     }
+
+    public MatchState copy() {
+        return new MatchState(tick, seed, players);
+    }
 }

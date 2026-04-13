@@ -15,6 +15,6 @@ public class AIInputSource implements PlayerInputSource {
 
     @Override
     public PlayerInput poll(InputFrame frame) {
-        return ai.decide(player);
+        return ai.decide(player, frame.state);
     }
 }

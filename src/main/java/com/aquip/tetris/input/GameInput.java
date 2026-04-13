@@ -8,8 +8,8 @@ public enum GameInput {
     HOLD_PIECE,
     ROTATE_CW,
     ROTATE_CCW,
-    ROTATE_180,
-    CHANGE_TARGET,
+    ROTATE_180, //unused
+    CHANGE_TARGET, //unused
 
     FORFEIT
 }

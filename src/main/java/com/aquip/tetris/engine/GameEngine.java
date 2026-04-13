@@ -30,6 +30,7 @@ public class GameEngine {
 
     public void tick(InputFrame frame) {
 
+        frame.state = this.state.copy();
         inputs.clear();
 
         for (PlayerInputSource source : inputSources) {
