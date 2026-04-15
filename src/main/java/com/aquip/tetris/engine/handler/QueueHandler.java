@@ -16,6 +16,9 @@ public class QueueHandler {
     public void apply(MatchState match, TickContext context) {
 
         for (PlayerState player : match.players) {
+            if (!player.status.alive) {
+                continue;
+            }
 
             PlayerTickContext ctx = context.get(player);
 
@@ -56,6 +59,7 @@ public class QueueHandler {
         if (held == null) {
             player.next.held = current.type;
             player.piece.currentPiece = null;
+            player.next.canHold = false;
             spawnNext(player);
             return;
         }
@@ -64,6 +68,7 @@ public class QueueHandler {
         player.next.held = current.type;
         player.piece.currentPiece = createSpawnPiece(player, held);
         player.next.canHold = false;
+        resetSpawnState(player);
     }
 
     // =====================
@@ -77,6 +82,7 @@ public class QueueHandler {
 
         PieceType nextType = player.next.next.poll();
         player.piece.currentPiece = createSpawnPiece(player, nextType);
+        resetSpawnState(player);
     }
 
     private Piece createSpawnPiece(PlayerState player, PieceType type) {
@@ -117,5 +123,10 @@ public class QueueHandler {
     private PieceType randomPiece() {
         PieceType[] values = PieceType.values();
         return values[random.nextInt(values.length)];
+    }
+
+    private void resetSpawnState(PlayerState player) {
+        player.lock.reset();
+        player.gravity.reset();
     }
 }

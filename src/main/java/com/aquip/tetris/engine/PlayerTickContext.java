@@ -50,5 +50,7 @@ public class PlayerTickContext {
         pieceSpawned = false;
         pieceGrounded = false;
         piecePlaced = false;
+
+        moveContext.reset();
     }
 }

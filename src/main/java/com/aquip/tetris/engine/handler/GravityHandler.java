@@ -16,10 +16,12 @@ public class GravityHandler implements PlayerHandler {
 
         player.gravity.gravityTicks++;
 
-        int threshold = player.config.gravityTick;
+        int piecesPlaced = player.time.amount();
+        int threshold = player.config.gravityThresholdForPieces(piecesPlaced);
+        int softDropThreshold = player.config.softDropThresholdForPieces(piecesPlaced);
 
         if (player.gravity.gravityTicks >= threshold ||
-                (ctx.softDrop && player.gravity.gravityTicks >= min(2, threshold))) {
+                (ctx.softDrop && player.gravity.gravityTicks >= min(softDropThreshold, threshold))) {
 
             player.gravity.gravityTicks = 0;
 

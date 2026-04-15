@@ -27,7 +27,7 @@ public class PlayerState {
         this.player = player;
         this.config = config;
 
-        this.board = new BoardState(config.boardWidth, config.boardHeight);
+        this.board = new BoardState(config.boardWidth, config.boardHeight + config.spawnBufferRows);
         this.piece = new PieceState();
         this.next = new QueueState();
         this.lock = new LockState();

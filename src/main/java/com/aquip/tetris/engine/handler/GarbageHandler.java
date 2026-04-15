@@ -13,7 +13,14 @@ public class GarbageHandler {
 
     public void apply(MatchState match, TickContext context) {
 
+        if (match.players.size() < 2) {
+            return;
+        }
+
         for (PlayerState attacker : match.players) {
+            if (!attacker.status.alive) {
+                continue;
+            }
 
             validateTarget(attacker, match);
 
@@ -23,21 +30,15 @@ public class GarbageHandler {
 
             PlacementResult result = getLastPlacement(attacker);
             if (result == null) {
-                System.out.println("[GARBAGE] No placement found for " + attacker.player);
                 continue;
             }
 
             PlaceKey key = result.getPlaceKey();
 
-            System.out.println("[GARBAGE] " + attacker.player +
-                    " placed: " + key);
-
             // =====================
             // CALCULATE
             // =====================
             int garbage = attacker.config.garbageTable.get(key);
-
-            System.out.println("[GARBAGE] Base garbage: " + garbage);
 
             int comboBonus = Math.max(0, attacker.combo.amount() - 1);
             garbage += comboBonus;
@@ -45,23 +46,14 @@ public class GarbageHandler {
             int b2bBonus = (attacker.b2b.amount() > 1) ? 1 : 0;
             garbage += b2bBonus;
 
-            System.out.println("[GARBAGE] After bonuses: " + garbage +
-                    " (combo=" + comboBonus + ", b2b=" + b2bBonus + ")");
-
             if (garbage <= 0) {
-                System.out.println("[GARBAGE] No garbage to send.");
                 continue;
             }
 
             // =====================
             // CANCEL
             // =====================
-            int beforeCancel = garbage;
             int remaining = cancelIncoming(attacker, garbage);
-
-            System.out.println("[GARBAGE] Cancelled: " +
-                    (beforeCancel - remaining) +
-                    ", Remaining: " + remaining);
 
             if (remaining <= 0) continue;
 
@@ -71,21 +63,13 @@ public class GarbageHandler {
             PlayerState target = findTarget(match, attacker);
 
             if (target == null) {
-                System.out.println("[GARBAGE] No valid target for " + attacker.player);
                 continue;
             }
-
-            System.out.println("[GARBAGE] Sending " + remaining +
-                    " lines from " + attacker.player +
-                    " → " + target.player);
 
             // =====================
             // SEND
             // =====================
             target.garbage.incoming.add(remaining);
-
-            System.out.println("[GARBAGE] Target queue now: " +
-                    target.garbage.incoming.totalLines());
         }
     }
 
@@ -132,11 +116,6 @@ public class GarbageHandler {
                 .toList();
 
         if (validTargets.isEmpty()) {
-            // Only log ONCE when transitioning to no targets
-            if (attacker.garbage.target != null) {
-                System.out.println("[TARGET] Player{" + attacker.player.getId() + "} lost all targets");
-            }
-
             attacker.garbage.target = null;
             return;
         }
@@ -144,8 +123,6 @@ public class GarbageHandler {
         // Pick random new target
         PlayerState newTarget = validTargets.get((int)(Math.random() * validTargets.size()));
         attacker.garbage.target = newTarget.player.getId();
-
-        System.out.println("[TARGET] Player{" + attacker.player.getId() + "} -> New target: " + newTarget.player.getId());
     }
 
     private boolean isValidTarget(PlayerState attacker, MatchState match, UUID targetId) {

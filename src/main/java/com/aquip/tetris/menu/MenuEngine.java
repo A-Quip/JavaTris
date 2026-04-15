@@ -10,17 +10,13 @@ import java.io.File;
 public class MenuEngine {
 
     public final File gameConfigFile;
-    public final File inputConfigFile;
-
     public final MenuState state;
     private final MenuInputMapper mapper;
 
     public MenuEngine(File gameConfigFile,
-                      File inputConfigFile,
                       MenuInputMapper mapper) {
 
         this.gameConfigFile = gameConfigFile;
-        this.inputConfigFile = inputConfigFile;
         this.state = new MenuState();
         this.mapper = mapper;
     }
@@ -40,24 +36,10 @@ public class MenuEngine {
 
         switch (input) {
 
-            case UP -> state.selectionIndex = Math.max(0, state.selectionIndex - 1);
-
-            case DOWN -> state.selectionIndex = Math.min(3, state.selectionIndex + 1);
-
-            case LEFT -> {
-                if (state.screen == MenuOption.PLAY) {
-                    state.playerCount = Math.max(1, state.playerCount - 1);
-                }
-            }
-
-            case RIGHT -> {
-                if (state.screen == MenuOption.PLAY) {
-                    state.playerCount++;
-                }
-            }
+            case UP, DOWN, LEFT, RIGHT -> state.selectionIndex = 0;
 
             case CONFIRM -> {
-                if (state.screen == MenuOption.PLAY) {
+                if (state.screen == MenuOption.PLAY && state.selectionIndex == 0) {
                     state.screen = null; // start game
                 }
             }
@@ -72,8 +54,16 @@ public class MenuEngine {
 
         if (state.screen != null) return null;
 
-        ConfigState config = GameConfigParser.parse(gameConfigFile);
+        return createGame();
+    }
 
-        return MenuGameFactory.createGame(state.playerCount, config);
+    public GameEngine createGame() {
+        ConfigState config = GameConfigParser.parse(gameConfigFile);
+        return MenuGameFactory.createGame(config);
+    }
+
+    public void showPlayMenu() {
+        state.screen = MenuOption.PLAY;
+        state.selectionIndex = 0;
     }
 }

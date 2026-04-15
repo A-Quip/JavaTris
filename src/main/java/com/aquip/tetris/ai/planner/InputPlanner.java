@@ -1,9 +1,9 @@
 package com.aquip.tetris.ai.planner;
 
+import java.util.Queue;
+
 import com.aquip.tetris.input.GameInput;
 import com.aquip.tetris.state.MatchState;
-
-import java.util.Queue;
 
 public interface InputPlanner {
 

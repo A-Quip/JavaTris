@@ -28,6 +28,10 @@ public class InputHandler {
                             GameInput input,
                             TickContext context) {
 
+        if (player == null || !player.status.alive) {
+            return;
+        }
+
         var ctx = context.get(player);
 
         //System.out.println(input);

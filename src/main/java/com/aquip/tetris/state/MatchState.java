@@ -30,6 +30,15 @@ public class MatchState {
         players.add(player);
     }
 
+    public boolean isGameOver() {
+        for (PlayerState player : players) {
+            if (player.status.alive) {
+                return false;
+            }
+        }
+        return !players.isEmpty();
+    }
+
     public PlayerState getPlayerState(Player player) {
         for (PlayerState ps : players) {
             if (ps.player.equals(player)) {

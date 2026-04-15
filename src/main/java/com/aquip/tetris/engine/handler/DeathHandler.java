@@ -31,8 +31,12 @@ public class DeathHandler {
             if (ctx.pieceSpawned) {
 
                 if (checkSpawnCollision(player)) {
-                    status.kill(match.tick);
+                    killPlayer(player, status, match.tick);
                 }
+            }
+
+            if (ctx.piecePlaced && hasLockedOut(player)) {
+                killPlayer(player, status, match.tick);
             }
         }
     }
@@ -44,17 +48,10 @@ public class DeathHandler {
 
         var garbage = player.garbage.incoming;
         if (garbage == null) {
-            System.out.println("[GARBAGE-APPLY] No garbage queue for " + player.player);
             return;
         }
 
-        int totalBefore = garbage.totalLines();
-
         int lines = garbage.pollAllReady();
-
-        System.out.println("[GARBAGE-APPLY] " + player.player +
-                " had " + totalBefore +
-                " queued, applying: " + lines);
 
         if (lines <= 0) return;
 
@@ -78,9 +75,6 @@ public class DeathHandler {
 
             board[height - 1] = row;
         }
-
-        System.out.println("[GARBAGE-APPLY] Applied " + lines +
-                " lines to " + player.player);
     }
 
     // =====================
@@ -95,15 +89,30 @@ public class DeathHandler {
         if (piece == null) return false;
 
         for (var block : piece.getBlocks(registry)) {
-
-            int x = piece.x + block.x;
-            int y = piece.y + block.y;
-
-            if (board.isOccupied(x, y)) {
+            if (board.isOccupied(block.x, block.y)) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    private boolean hasLockedOut(PlayerState player) {
+        int hiddenRows = player.config.spawnBufferRows;
+
+        for (int y = 0; y < hiddenRows; y++) {
+            for (int x = 0; x < player.board.getWidth(); x++) {
+                if (player.board.get(x, y) != 0) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void killPlayer(PlayerState player, StatusState status, int tick) {
+        status.kill(tick);
+        player.piece.currentPiece = null;
     }
 }

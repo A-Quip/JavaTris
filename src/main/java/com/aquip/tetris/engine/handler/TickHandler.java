@@ -55,6 +55,12 @@ public class TickHandler {
 
         // 2. PER-PLAYER SIMULATION
         for (PlayerState player : matchState.players) {
+            if (!player.status.alive) {
+                continue;
+            }
+
+            player.time.tick++;
+
             gravityHandler.apply(player, context);
             physicsHandler.apply(player, context);
             lockHandler.apply(player, context);

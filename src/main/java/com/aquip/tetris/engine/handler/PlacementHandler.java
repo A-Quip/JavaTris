@@ -53,16 +53,6 @@ public class PlacementHandler implements PlayerHandler {
                 linesCleared
         );
 
-        System.out.println(result);
-
-        // =====================
-        // 5. STATE UPDATE
-        // =====================
-        player.time.addPlacement(result);
-
-        // =====================
-        // 6. CLEANUP
-        // =====================
         player.time.addPlacement(result);
 
         ctx.piecePlaced = true;
@@ -145,6 +135,8 @@ public class PlacementHandler implements PlayerHandler {
     // =====================
     private void placePiece(int[][] board, Piece piece, int[][] shape) {
 
+        int pieceValue = piece.type.ordinal() + 1;
+
         for (int y = 0; y < shape.length; y++) {
             for (int x = 0; x < shape[y].length; x++) {
 
@@ -155,7 +147,7 @@ public class PlacementHandler implements PlayerHandler {
 
                 if (by >= 0 && by < board.length &&
                         bx >= 0 && bx < board[0].length) {
-                    board[by][bx] = 1;
+                    board[by][bx] = pieceValue;
                 }
             }
         }

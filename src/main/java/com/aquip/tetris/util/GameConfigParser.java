@@ -25,8 +25,12 @@ public class GameConfigParser {
             // =====================
             config.boardWidth = ((Number) data.getOrDefault("boardWidth", 10)).intValue();
             config.boardHeight = ((Number) data.getOrDefault("boardHeight", 20)).intValue();
+            config.spawnBufferRows = ((Number) data.getOrDefault("spawnBufferRows", 4)).intValue();
 
             config.gravityTick = ((Number) data.getOrDefault("gravityTick", 60)).intValue();
+            config.minimumGravityTick = ((Number) data.getOrDefault("minimumGravityTick", 8)).intValue();
+            config.gravityStepEveryPieces = ((Number) data.getOrDefault("gravityStepEveryPieces", 10)).intValue();
+            config.gravityStepAmount = ((Number) data.getOrDefault("gravityStepAmount", 4)).intValue();
             config.lockTick = ((Number) data.getOrDefault("lockTick", 30)).intValue();
 
             config.useBag = (boolean) data.getOrDefault("useBag", true);

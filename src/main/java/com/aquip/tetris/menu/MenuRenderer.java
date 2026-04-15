@@ -12,41 +12,18 @@ public class MenuRenderer {
 
         if (state.screen == MenuOption.PLAY) {
             renderPlayScreen(state);
-        } else if (state.screen == MenuOption.GAME_SETTINGS) {
-            renderGameSettings(state);
-        } else if (state.screen == MenuOption.OPTIONS) {
-            renderOptions(state);
         }
 
         System.out.println();
-        System.out.println("Use arrow keys + Enter");
+        System.out.println("Press Enter to start");
     }
 
     private void renderPlayScreen(MenuState state) {
-
-        String[] options = {
-                "Start Game",
-                "Players: " + state.playerCount,
-                "Game Settings",
-                "Options"
-        };
-
-        for (int i = 0; i < options.length; i++) {
-            if (i == state.selectionIndex) {
-                System.out.println("> " + options[i]);
-            } else {
-                System.out.println("  " + options[i]);
-            }
-        }
-    }
-
-    private void renderGameSettings(MenuState state) {
-        System.out.println("== GAME SETTINGS ==");
-        System.out.println("(not implemented)");
-    }
-
-    private void renderOptions(MenuState state) {
-        System.out.println("== OPTIONS ==");
-        System.out.println("(not implemented)");
+        System.out.println("> Start Game");
+        System.out.println();
+        System.out.println("Single-player build");
+        System.out.println("Move: Left / Right");
+        System.out.println("Rotate: Z / X");
+        System.out.println("Soft Drop: Down | Hard Drop: Space | Hold: C");
     }
 }

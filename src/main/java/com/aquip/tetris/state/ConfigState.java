@@ -12,6 +12,7 @@ public class ConfigState {
 
     public int boardWidth;
     public int boardHeight;
+    public int spawnBufferRows;
 
     public Map<PieceType, Integer> minoSet;
     public boolean useBag;
@@ -20,6 +21,9 @@ public class ConfigState {
     public int nextSize;
 
     public int gravityTick;
+    public int minimumGravityTick;
+    public int gravityStepEveryPieces;
+    public int gravityStepAmount;
 
     public int lockTick;
     public int maxSlides;
@@ -37,6 +41,7 @@ public class ConfigState {
     public ConfigState() {
         this.boardWidth = 10;
         this.boardHeight = 20;
+        this.spawnBufferRows = 4;
 
         this.minoSet = new HashMap<>();
         this.useBag = true;
@@ -45,6 +50,9 @@ public class ConfigState {
         this.nextSize = 5;
 
         this.gravityTick = 60;
+        this.minimumGravityTick = 1;
+        this.gravityStepEveryPieces = 10;
+        this.gravityStepAmount = 1;
 
         this.lockTick = 45;
         this.maxSlides = 15;
@@ -54,5 +62,15 @@ public class ConfigState {
 
         this.godMode = false;
         this.pacifist = false;
+    }
+
+    public int gravityThresholdForPieces(int piecesPlaced) {
+        int steps = gravityStepEveryPieces <= 0 ? 0 : piecesPlaced / gravityStepEveryPieces;
+        int threshold = gravityTick - (steps * gravityStepAmount);
+        return Math.max(1, Math.max(minimumGravityTick, threshold));
+    }
+
+    public int softDropThresholdForPieces(int piecesPlaced) {
+        return Math.max(1, gravityThresholdForPieces(piecesPlaced) / 8);
     }
 }

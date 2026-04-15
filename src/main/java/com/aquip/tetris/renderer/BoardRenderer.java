@@ -8,64 +8,67 @@ import java.awt.*;
 
 public class BoardRenderer {
 
-    private static final int BLOCK_SIZE = 24;
-
     public void render(Graphics2D g, PlayerState state, Rectangle area) {
-
         int boardWidth = state.board.getWidth();
-        int boardHeight = state.board.getHeight();
-
-        int boardPixelWidth = boardWidth * BLOCK_SIZE;
-        int boardPixelHeight = boardHeight * BLOCK_SIZE;
+        int boardHeight = state.config.boardHeight;
+        int blockSize = Math.max(12, Math.min(area.width / boardWidth, area.height / boardHeight));
+        int boardPixelWidth = boardWidth * blockSize;
+        int boardPixelHeight = boardHeight * blockSize;
 
         int offsetX = area.x + (area.width - boardPixelWidth) / 2;
         int offsetY = area.y + (area.height - boardPixelHeight) / 2;
 
-        drawBoard(g, state, offsetX, offsetY);
-        drawGhostPiece(g, state, offsetX, offsetY);
-        drawCurrentPiece(g, state, offsetX, offsetY);
+        g.setColor(new Color(16, 18, 26));
+        g.fillRoundRect(offsetX - 8, offsetY - 8, boardPixelWidth + 16, boardPixelHeight + 16, 18, 18);
+
+        drawBoard(g, state, offsetX, offsetY, blockSize);
+        drawGhostPiece(g, state, offsetX, offsetY, blockSize);
+        drawCurrentPiece(g, state, offsetX, offsetY, blockSize);
     }
 
-    private void drawBoard(Graphics2D g, PlayerState state, int offsetX, int offsetY) {
+    private void drawBoard(Graphics2D g, PlayerState state, int offsetX, int offsetY, int blockSize) {
         var board = state.board;
+        int hiddenRows = state.config.spawnBufferRows;
 
-        for (int y = 0; y < board.getHeight(); y++) {
+        for (int y = hiddenRows; y < board.getHeight(); y++) {
             for (int x = 0; x < board.getWidth(); x++) {
 
                 int value = board.get(x, y);
 
                 if (value != 0) {
                     g.setColor(getColor(value));
-                    fillCell(g, x, y, offsetX, offsetY);
+                    fillCell(g, x, y - hiddenRows, offsetX, offsetY, blockSize);
                 } else {
                     g.setColor(Color.DARK_GRAY);
-                    drawCell(g, x, y, offsetX, offsetY);
+                    drawCell(g, x, y - hiddenRows, offsetX, offsetY, blockSize);
                 }
             }
         }
     }
 
-    private void drawCurrentPiece(Graphics2D g, PlayerState state, int offsetX, int offsetY) {
+    private void drawCurrentPiece(Graphics2D g, PlayerState state, int offsetX, int offsetY, int blockSize) {
         if (!state.piece.hasPiece()) return;
 
         Piece piece = state.piece.currentPiece;
+        int hiddenRows = state.config.spawnBufferRows;
 
         g.setColor(getColor(piece.type.ordinal() + 1));
 
         for (Piece.Position p : piece.getBlocks(PieceRegistry.getInstance())) {
-            fillCell(g, p.x, p.y, offsetX, offsetY);
+            fillCell(g, p.x, p.y - hiddenRows, offsetX, offsetY, blockSize);
         }
     }
 
-    private void drawGhostPiece(Graphics2D g, PlayerState state, int offsetX, int offsetY) {
+    private void drawGhostPiece(Graphics2D g, PlayerState state, int offsetX, int offsetY, int blockSize) {
         if (!state.piece.hasPiece()) return;
 
         Piece ghost = computeGhost(state);
+        int hiddenRows = state.config.spawnBufferRows;
 
         g.setColor(new Color(255, 255, 255, 80));
 
         for (Piece.Position p : ghost.getBlocks(PieceRegistry.getInstance())) {
-            fillCell(g, p.x, p.y, offsetX, offsetY);
+            fillCell(g, p.x, p.y - hiddenRows, offsetX, offsetY, blockSize);
         }
     }
 
@@ -82,12 +85,12 @@ public class BoardRenderer {
         return ghost.displace(0, -1);
     }
 
-    private void fillCell(Graphics2D g, int x, int y, int offsetX, int offsetY) {
-        g.fillRect(offsetX + x * BLOCK_SIZE, offsetY + y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+    private void fillCell(Graphics2D g, int x, int y, int offsetX, int offsetY, int blockSize) {
+        g.fillRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
     }
 
-    private void drawCell(Graphics2D g, int x, int y, int offsetX, int offsetY) {
-        g.drawRect(offsetX + x * BLOCK_SIZE, offsetY + y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+    private void drawCell(Graphics2D g, int x, int y, int offsetX, int offsetY, int blockSize) {
+        g.drawRect(offsetX + x * blockSize, offsetY + y * blockSize, blockSize, blockSize);
     }
 
     private Color getColor(int value) {

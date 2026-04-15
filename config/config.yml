@@ -1,9 +1,13 @@
 # Board dimensions
 boardWidth: 10
 boardHeight: 20
+spawnBufferRows: 4
 
 # Timing (in ticks)
 gravityTick: 60   # how fast pieces fall
+minimumGravityTick: 1
+gravityStepEveryPieces: 10
+gravityStepAmount: 1
 lockTick: 30      # delay before piece locks
 
 # Piece generation

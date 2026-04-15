@@ -1,6 +1,6 @@
 package com.aquip.tetris.engine;
 
-import com.aquip.tetris.ai.SimpleAI;
+import com.aquip.tetris.ai.HeuristicAI;
 import com.aquip.tetris.engine.handler.*;
 import com.aquip.tetris.input.*;
 import com.aquip.tetris.player.Player;
@@ -31,14 +31,12 @@ public class GameFactory {
             if (player.getType() == PlayerType.HUMAN) {
                 source = new HumanInputSource(player);
             } else {
-                source = new AIInputSource(player, new SimpleAI());
+                source = new AIInputSource(player, new HeuristicAI());
             }
 
             inputSources.add(source);
 
-            PlayerState playerState = new PlayerState();
-            playerState.player = player;
-            playerState.config = config;
+            PlayerState playerState = new PlayerState(player, config);
 
             matchState.addPlayer(playerState);
         }
