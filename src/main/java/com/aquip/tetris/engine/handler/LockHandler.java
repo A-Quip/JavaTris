@@ -14,7 +14,7 @@ public class LockHandler implements PlayerHandler {
         var lock = player.lock;
         var config = player.config;
 
-        System.out.println(lock.lockTicks);
+        //System.out.println(lock.lockTicks);
 
         if (ctx.hardDrop) {
             ctx.pieceLocked = true;
