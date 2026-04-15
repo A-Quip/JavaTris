@@ -1,0 +1,86 @@
+# Board dimensions
+boardWidth: 10
+boardHeight: 20
+spawnBufferRows: 4
+
+# Timing (in ticks)
+gravityTick: 60   # how fast pieces fall
+minimumGravityTick: 1
+gravityStepEveryPieces: 10
+gravityStepAmount: 1
+lockTick: 30      # delay before piece locks
+
+# Piece generation
+useBag: true      # 7-bag randomizer (true = modern Tetris)
+
+clearTable:
+
+  # =====================
+  # NORMAL LINE CLEARS
+  # =====================
+  - spin: NONE
+    lines: 1
+    score: 100
+    garbage: 0
+
+  - spin: NONE
+    lines: 2
+    score: 400
+    garbage: 1
+
+  - spin: NONE
+    lines: 3
+    score: 800
+    garbage: 2
+
+  - spin: NONE
+    lines: 4
+    score: 1200
+    garbage: 4
+
+  # =====================
+  # T-SPINS
+  # =====================
+  - spin: T_SPIN
+    lines: 1
+    score: 800
+    garbage: 2
+
+  - spin: T_SPIN
+    lines: 2
+    score: 1200
+    garbage: 4
+
+  - spin: T_SPIN
+    lines: 3
+    score: 1600
+    garbage: 7
+
+  - spin: T_SPIN
+    lines: 4
+    score: 2000
+    garbage: 10
+
+  # =====================
+  # T-SPIN MINI
+  # =====================
+  - spin: T_SPIN_MINI
+    lines: 1
+    score: 400
+    garbage: 1
+
+  - spin: T_SPIN_MINI
+    lines: 2
+    score: 600
+    garbage: 2
+
+  # (optional: if you want to define these explicitly)
+  - spin: T_SPIN_MINI
+    lines: 3
+    score: 800
+    garbage: 6
+
+  - spin: T_SPIN_MINI
+    lines: 4
+    score: 1000
+    garbage: 8
