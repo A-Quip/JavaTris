@@ -9,10 +9,7 @@ public class GamePanel extends JPanel {
 
     private MatchState state;
 
-    private final BoardRenderer boardRenderer;
-
     public GamePanel() {
-        this.boardRenderer = new BoardRenderer();
         setBackground(Color.BLACK);
     }
 
@@ -27,7 +24,8 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        if (state == null) return;
+        if (state == null)
+            return;
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -58,8 +56,7 @@ public class GamePanel extends JPanel {
                     col * cellW,
                     row * cellH,
                     cellW,
-                    cellH
-            );
+                    cellH);
 
             renderer.render(g2, state.players.get(i), area);
         }

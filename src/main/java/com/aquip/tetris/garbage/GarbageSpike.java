@@ -1,7 +1,5 @@
 package com.aquip.tetris.garbage;
 
-import static java.lang.Integer.max;
-
 public class GarbageSpike {
 
     private int lines;

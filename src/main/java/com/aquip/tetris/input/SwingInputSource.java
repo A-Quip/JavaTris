@@ -1,7 +1,5 @@
 package com.aquip.tetris.input;
 
-import com.aquip.tetris.state.MatchState;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -16,17 +14,9 @@ public class SwingInputSource implements InputSource {
 
         boolean pressedThisFrame = false;
         boolean releasedThisFrame = false;
-
-        int heldTicks = 0;
-        int arrTicks = 0;
     }
 
     private final Map<Integer, KeyState> keys = new HashMap<>();
-
-    // Keys that use DAS
-    private final Set<Integer> dasKeys = Set.of(
-            KeyEvent.VK_LEFT,
-            KeyEvent.VK_RIGHT);
 
     public SwingInputSource(JComponent component) {
 
@@ -75,8 +65,6 @@ public class SwingInputSource implements InputSource {
 
                 if (!k.held) {
                     k.pressedThisFrame = true;
-                    k.heldTicks = 0;
-                    k.arrTicks = 0;
                 }
 
                 k.held = true;
@@ -90,9 +78,6 @@ public class SwingInputSource implements InputSource {
 
                 k.held = false;
                 k.releasedThisFrame = true;
-
-                k.heldTicks = 0;
-                k.arrTicks = 0;
             }
         });
     }

@@ -1,7 +1,5 @@
 package com.aquip.tetris.state;
 
-import com.aquip.tetris.player.Player;
-
 public class LockState {
 
     public int lockTicks;
