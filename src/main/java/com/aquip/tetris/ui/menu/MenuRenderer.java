@@ -26,6 +26,5 @@ public class MenuRenderer {
 
         System.out.println();
         System.out.println(state.selectedMode().description());
-        System.out.println(state.selectedMode().controls());
     }
 }

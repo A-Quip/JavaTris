@@ -26,8 +26,7 @@ public class SwingInputSource implements InputSource {
     // Keys that use DAS
     private final Set<Integer> dasKeys = Set.of(
             KeyEvent.VK_LEFT,
-            KeyEvent.VK_RIGHT
-    );
+            KeyEvent.VK_RIGHT);
 
     public SwingInputSource(JComponent component) {
 
@@ -39,8 +38,6 @@ public class SwingInputSource implements InputSource {
         bind(component, KeyEvent.VK_DOWN);
         bind(component, KeyEvent.VK_SPACE);
         bind(component, KeyEvent.VK_ENTER);
-        bind(component, KeyEvent.VK_Z);
-        bind(component, KeyEvent.VK_X);
         bind(component, KeyEvent.VK_A);
         bind(component, KeyEvent.VK_D);
         bind(component, KeyEvent.VK_S);
@@ -48,8 +45,9 @@ public class SwingInputSource implements InputSource {
         bind(component, KeyEvent.VK_Q);
         bind(component, KeyEvent.VK_E);
         bind(component, KeyEvent.VK_F);
-        bind(component, KeyEvent.VK_SHIFT);
-        bind(component, KeyEvent.VK_C);
+        bind(component, KeyEvent.VK_PERIOD);
+        bind(component, KeyEvent.VK_COMMA);
+        bind(component, KeyEvent.VK_SLASH);
         bind(component, KeyEvent.VK_R);
         bind(component, KeyEvent.VK_ESCAPE);
     }

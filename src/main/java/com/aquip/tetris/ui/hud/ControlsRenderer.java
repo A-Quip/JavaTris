@@ -32,31 +32,39 @@ public class ControlsRenderer {
         boolean playerTwo = "P2".equalsIgnoreCase(state.player.getName());
 
         if (playerTwo) {
-            g.drawString("A / D         Move", x, y);
+            g.drawString("A      Left", x, y);
             y += lineHeight;
-            g.drawString("S             Soft drop", x, y);
+            g.drawString("D      Right", x, y);
             y += lineHeight;
-            g.drawString("Shift / F     Hard drop", x, y);
+            g.drawString("S      Soft drop", x, y);
             y += lineHeight;
-            g.drawString("Q / W         Rotate", x, y);
+            g.drawString("F      Hard drop", x, y);
             y += lineHeight;
-            g.drawString("E             Hold", x, y);
+            g.drawString("Q      Rotate ↺", x, y);
+            y += lineHeight;
+            g.drawString("W      Rotate ↻", x, y);
+            y += lineHeight;
+            g.drawString("E      Hold", x, y);
         } else {
-            g.drawString("Left / Right  Move", x, y);
+            g.drawString("Left   Move", x, y);
             y += lineHeight;
-            g.drawString("Down          Soft drop", x, y);
+            g.drawString("Right  Move", x, y);
             y += lineHeight;
-            g.drawString("Space         Hard drop", x, y);
+            g.drawString("Down   Soft drop", x, y);
             y += lineHeight;
-            g.drawString("Z / X         Rotate", x, y);
+            g.drawString("Up     Hard drop", x, y);
             y += lineHeight;
-            g.drawString("C             Hold", x, y);
+            g.drawString("<      Rotate ↺", x, y);
+            y += lineHeight;
+            g.drawString(">      Rotate ↻", x, y);
+            y += lineHeight;
+            g.drawString("/      Hold", x, y);
         }
 
         y += lineHeight;
-        g.drawString("Esc           Menu", x, y);
+        g.drawString("Esc    Menu", x, y);
         y += lineHeight;
-        g.drawString("R / Enter     Restart", x, y);
+        g.drawString("R      Restart", x, y);
     }
 
     private void drawPanel(Graphics2D g, Rectangle area, String title) {
