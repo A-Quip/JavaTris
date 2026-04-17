@@ -3,33 +3,23 @@ package com.aquip.tetris.ui.menu;
 public enum GameMode {
     SOLO(
             "Solo",
-            "Single-player survival.",
-            "P1: Arrows, Z/X, C, Space"
-    ),
+            "Single-player survival."),
     VS_AI(
             "Vs AI",
-            "Human versus planning bot with garbage.",
-            "P1: Arrows, Z/X, C, Space"
-    ),
+            "Human versus planning bot with garbage."),
     TWO_PLAYER(
             "2 Players",
-            "Two humans on one keyboard with garbage.",
-            "P1: Arrows/Z/X/C/Space | P2: A/D/Q/W/E/Shift"
-    ),
+            "Two humans on one keyboard with garbage."),
     AI_DEMO(
             "AI Demo",
-            "Watch the bot play by itself.",
-            "No human input during play"
-    );
+            "Watch the bot play by itself.");
 
     private final String label;
     private final String description;
-    private final String controls;
 
-    GameMode(String label, String description, String controls) {
+    GameMode(String label, String description) {
         this.label = label;
         this.description = description;
-        this.controls = controls;
     }
 
     public String label() {
@@ -38,9 +28,5 @@ public enum GameMode {
 
     public String description() {
         return description;
-    }
-
-    public String controls() {
-        return controls;
     }
 }

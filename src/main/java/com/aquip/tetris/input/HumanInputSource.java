@@ -83,8 +83,10 @@ public class HumanInputSource implements PlayerInputSource {
         boolean rightPressed = isPressed(frame, getRightKeys());
 
         int direction = 0;
-        if (leftHeld && !rightHeld) direction = -1;
-        else if (rightHeld && !leftHeld) direction = 1;
+        if (leftHeld && !rightHeld)
+            direction = -1;
+        else if (rightHeld && !leftHeld)
+            direction = 1;
 
         // no input → reset
         if (direction == 0) {
@@ -131,44 +133,44 @@ public class HumanInputSource implements PlayerInputSource {
 
     private int[] getLeftKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_LEFT}
-                : new int[]{KeyEvent.VK_A};
+                ? new int[] { KeyEvent.VK_LEFT }
+                : new int[] { KeyEvent.VK_A };
     }
 
     private int[] getRightKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_RIGHT}
-                : new int[]{KeyEvent.VK_D};
+                ? new int[] { KeyEvent.VK_RIGHT }
+                : new int[] { KeyEvent.VK_D };
     }
 
     private int[] getSoftDropKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_DOWN}
-                : new int[]{KeyEvent.VK_S};
+                ? new int[] { KeyEvent.VK_DOWN }
+                : new int[] { KeyEvent.VK_S };
     }
 
     private int[] getRotateCWKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_X}
-                : new int[]{KeyEvent.VK_W};
+                ? new int[] { KeyEvent.VK_PERIOD }
+                : new int[] { KeyEvent.VK_W };
     }
 
     private int[] getRotateCCWKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_Z}
-                : new int[]{KeyEvent.VK_Q};
+                ? new int[] { KeyEvent.VK_COMMA }
+                : new int[] { KeyEvent.VK_Q };
     }
 
     private int[] getHardDropKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_SPACE}
-                : new int[]{KeyEvent.VK_SHIFT, KeyEvent.VK_F};
+                ? new int[] { KeyEvent.VK_UP }
+                : new int[] { KeyEvent.VK_F };
     }
 
     private int[] getHoldKeys() {
         return controlScheme == ControlScheme.PLAYER_ONE
-                ? new int[]{KeyEvent.VK_C}
-                : new int[]{KeyEvent.VK_E};
+                ? new int[] { KeyEvent.VK_SLASH }
+                : new int[] { KeyEvent.VK_E };
     }
 
     private boolean isPressed(InputFrame frame, int[] keys) {
