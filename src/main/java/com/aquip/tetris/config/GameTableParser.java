@@ -11,7 +11,8 @@ import java.util.Map;
 
 public class GameTableParser {
 
-    public GameTableParser() {}
+    public GameTableParser() {
+    }
 
     public ScoreTable parseScore(File file) {
 
@@ -22,8 +23,7 @@ public class GameTableParser {
             Yaml yaml = new Yaml();
             Map<String, Object> root = yaml.load(fis);
 
-            List<Map<String, Object>> entries =
-                    (List<Map<String, Object>>) root.get("clearTable");
+            List<Map<String, Object>> entries = (List<Map<String, Object>>) root.get("clearTable");
 
             for (Map<String, Object> entry : entries) {
 
@@ -51,8 +51,7 @@ public class GameTableParser {
             Yaml yaml = new Yaml();
             Map<String, Object> root = yaml.load(fis);
 
-            List<Map<String, Object>> entries =
-                    (List<Map<String, Object>>) root.get("clearTable");
+            List<Map<String, Object>> entries = (List<Map<String, Object>>) root.get("clearTable");
 
             for (Map<String, Object> entry : entries) {
 
@@ -80,8 +79,7 @@ public class GameTableParser {
             Yaml yaml = new Yaml();
             Map<String, Object> root = yaml.load(fis);
 
-            List<Map<String, Object>> entries =
-                    (List<Map<String, Object>>) root.get("clearTable");
+            List<Map<String, Object>> entries = (List<Map<String, Object>>) root.get("clearTable");
 
             for (Map<String, Object> entry : entries) {
 

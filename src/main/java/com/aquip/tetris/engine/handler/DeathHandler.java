@@ -16,7 +16,8 @@ public class DeathHandler {
             PlayerTickContext ctx = context.get(player);
             StatusState status = player.status;
 
-            if (!status.alive) continue;
+            if (!status.alive)
+                continue;
 
             // =====================
             // 1. APPLY GARBAGE (AFTER SPAWN)
@@ -53,7 +54,8 @@ public class DeathHandler {
 
         int lines = garbage.pollAllReady();
 
-        if (lines <= 0) return;
+        if (lines <= 0)
+            return;
 
         int[][] board = player.board.board;
         int width = board[0].length;
@@ -86,25 +88,12 @@ public class DeathHandler {
         var registry = PieceRegistry.getInstance();
         var board = player.board;
 
-        if (piece == null) return false;
+        if (piece == null)
+            return false;
 
         for (var block : piece.getBlocks(registry)) {
             if (board.isOccupied(block.x, block.y)) {
                 return true;
-            }
-        }
-
-        return false;
-    }
-
-    private boolean hasLockedOut(PlayerState player) {
-        int hiddenRows = player.config.spawnBufferRows;
-
-        for (int y = 0; y < hiddenRows; y++) {
-            for (int x = 0; x < player.board.getWidth(); x++) {
-                if (player.board.get(x, y) != 0) {
-                    return true;
-                }
             }
         }
 

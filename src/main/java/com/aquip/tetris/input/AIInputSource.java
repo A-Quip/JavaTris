@@ -103,7 +103,6 @@ public class AIInputSource implements PlayerInputSource {
                     sequenceIndex = 0;
                     phase = Phase.CONSUMING;
 
-                    long turnaround = System.currentTimeMillis() - searchStartedAtMs;
                 } else {
                     // Arrived stale
                     consecutiveStaleResults++;
