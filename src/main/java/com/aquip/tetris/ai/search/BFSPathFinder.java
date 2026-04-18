@@ -214,9 +214,8 @@ public class BFSPathFinder {
 
         // Fast-forward gravity waiting process.
         // We accumulate ticks silently inside this loop until the fall threshold is
-        // met,
-        // rather than deferring to `processNextNode` which would incorrectly prune the
-        // wait-state.
+        // met, rather than deferring to `processNextNode` which would incorrectly prune
+        // the wait-state.
         while (true) {
             nextGravityTicks += step;
             boolean falls = FastGravity.shouldFall(nextGravityTicks, isSoftDrop, config, piecesPlaced);
@@ -250,13 +249,11 @@ public class BFSPathFinder {
     }
 
     /**
-     * Computes the next lock/gravity state and, if the resulting spatial position
+     * Computes the next lock/gravity state and, if the resulting position
      * has not been visited yet, creates a BFSNode and enqueues it.
      *
-     * <p>
-     * The visited check happens <em>before</em> object creation, so a BFSNode
+     * The visited check happens before object creation, so a BFSNode
      * is only allocated when the state is genuinely new.
-     * </p>
      */
     private void processNextNode(BFSNode node, Piece next, GameInput input,
             Queue<BFSNode> queue, boolean[] visited,
@@ -292,7 +289,7 @@ public class BFSPathFinder {
 
         // Check the boolean array before allocating a BFSNode.
         // If out of the pre-allocated range (degenerate SRS edge case), fall
-        // through and create the node anyway — the lock timer will still
+        // through and create the node anyway. The lock timer will still
         // terminate the BFS.
         if (inRange(next.x, next.y, next.rotation)) {
             int idx = stateIndex(next.x, next.y, next.rotation);
@@ -309,14 +306,13 @@ public class BFSPathFinder {
      * Records a placement if it hasn't been seen before in this BFS call.
      *
      * Uses the same int-encoded key as the visited array instead of
-     * building a {@code String} per candidate, eliminating all string
-     * allocation in the hot path.
+     * building a String per candidate.
      */
     private void addPlacementIfUnique(List<Placement> results,
             boolean[] placements, BFSNode node,
             GameInput terminalInput, Piece finalPiece) {
 
-        // #3: Encode (rotation, y, x) as a single int — no String allocation
+        // Encode (rotation, y, x) as a single int
         if (!inRange(finalPiece.x, finalPiece.y, finalPiece.rotation))
             return;
         int key = stateIndex(finalPiece.x, finalPiece.y, finalPiece.rotation);
