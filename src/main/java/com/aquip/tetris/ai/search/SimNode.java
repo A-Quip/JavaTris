@@ -114,7 +114,6 @@ public class SimNode {
         PieceType nextType = (queueIndex < nextQueue.length) ? nextQueue[queueIndex] : null;
         Piece nextPiece = null;
         if (nextType != null) {
-            // Standard spawn: centered at x=3, top of board (matching engine's spawn logic)
             nextPiece = new Piece(nextType, 0, 3, 3);
         }
 

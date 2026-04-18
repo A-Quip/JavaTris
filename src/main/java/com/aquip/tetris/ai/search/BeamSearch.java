@@ -21,20 +21,17 @@ import java.util.concurrent.Future;
  * Explores possible move sequences for the current and upcoming pieces,
  * selecting the path that results in the most favorable board state.
  *
- * <h3>Performance notes</h3>
- * <ul>
- * <li><b>#7 – Parallel beam expansion</b>: Each beam node's BFS search is
+ * Parallel beam expansion</b>: Each beam node's BFS search is
  * completely independent of all others (immutable board input, stateless
  * pathfinder, thread-local scratch buffers). A dedicated
  * {@link ForkJoinPool} runs all node expansions in parallel at each
  * depth level. Results are merged sequentially after the parallel phase
- * to avoid any lock contention on the deduplication map.</li>
- * <li><b>#10 – Cached heuristic score</b>: {@code heuristic.evaluate()} was
+ * to avoid any lock contention on the deduplication map.
+ * Cached heuristic score: {@code heuristic.evaluate()} was
  * previously called O(n log n) times during sorting and again for
  * logging. The score is now computed once per node during the parallel
  * expansion phase and stored in {@link SimNode#cachedScore}, making all
- * subsequent sort/log operations trivially cheap.</li>
- * </ul>
+ * subsequent sort/log operations trivially cheap.
  */
 public class BeamSearch {
 
@@ -77,7 +74,7 @@ public class BeamSearch {
         List<SimNode> beam = new ArrayList<>();
         FastBoard initialBoard = FastBoard.fromSnapshot(snapshot.board);
 
-        // 1. Initial placements for current piece
+        // Initial placements for current piece
         List<BFSPathFinder.Placement> currentPlacements = pathFinder.findAll(
                 initialBoard, snapshot.currentPiece,
                 getLockState(snapshot), getGravityState(snapshot),
@@ -88,7 +85,7 @@ public class BeamSearch {
             beam.add(createInitialNode(initialBoard, snapshot.nextQueue, 0, p, path, true));
         }
 
-        // 2. Consider HOLD path
+        // Consider HOLD path
         if (snapshot.canHold) {
             PieceType heldType = (snapshot.heldPiece != null) ? snapshot.heldPiece : snapshot.nextQueue[0];
             int nextQueueIndex = (snapshot.heldPiece != null) ? 0 : 1;
@@ -113,7 +110,7 @@ public class BeamSearch {
         }
 
         // --- LEVELS 1+: Future Pieces ---
-        // #7: Each depth level fans out into one Callable per beam node.
+        // Each depth level fans out into one Callable per beam node.
         // BFSPathFinder is stateless; per-thread scratch buffers (ThreadLocal
         // in BFSPathFinder and FastBoard) ensure no sharing between workers.
         // Results are merged sequentially after invokeAll() returns.
@@ -142,7 +139,7 @@ public class BeamSearch {
 
                     for (BFSPathFinder.Placement p : placements) {
                         SimNode next = node.applyPlacement(p, snapshot.nextQueue);
-                        // #10: Compute score once here, in the parallel phase,
+                        // Compute score once here, in the parallel phase,
                         // so all subsequent sort/dedup/log calls are free.
                         next.cachedScore = heuristic.evaluate(next);
                         nodeResults.add(next);
@@ -177,9 +174,17 @@ public class BeamSearch {
             if (nextBeam.isEmpty())
                 break;
 
-            // #10: Sort using the cached score — O(n log n) comparisons with no
-            // FeatureExtractor invocations
-            nextBeam.sort(Comparator.comparingDouble(n -> -n.cachedScore));
+            // Sort using the cached score — O(n log n) comparisons with no FeatureExtractor
+            // invocations
+            // Stable Tie-breaker: If scores are tied, prefer the path with fewer commands
+            // (efficiency).
+            nextBeam.sort((a, b) -> {
+                int cmp = Double.compare(b.cachedScore, a.cachedScore);
+                if (cmp != 0)
+                    return cmp;
+                // Primary tie-breaker: Fewer total commands in the sequence
+                return Integer.compare(a.rootPath.commands.size(), b.rootPath.commands.size());
+            });
             int limit = Math.min(config.beamWidth(), nextBeam.size());
             beam = new ArrayList<>(nextBeam.subList(0, limit));
         }
@@ -192,7 +197,12 @@ public class BeamSearch {
                 n.cachedScore = heuristic.evaluate(n);
             }
         }
-        beam.sort(Comparator.comparingDouble(n -> -n.cachedScore));
+        beam.sort((a, b) -> {
+            int cmp = Double.compare(b.cachedScore, a.cachedScore);
+            if (cmp != 0)
+                return cmp;
+            return Integer.compare(a.rootPath.commands.size(), b.rootPath.commands.size());
+        });
 
         MoveSequence best = beam.get(0).rootPath;
         return best;

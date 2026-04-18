@@ -15,17 +15,17 @@ public class FastBoard {
     public final int height;
     public final int[] rows; // rows[0] = topmost row, matching engine board[0]
 
-    // --- Cached hash (#6) ---
+    // Cached hash
     // Recomputed lazily on the first hashCode() call after any mutation.
     // Avoids iterating all 24 rows on every HashMap lookup in BeamSearch.
     private int cachedHash;
     private boolean hashDirty = true;
 
-    // --- ThreadLocal line-clear scratch buffer (#5) ---
+    // ThreadLocal line-clear scratch buffer
     // clearLines() is called on every applyPlacement(). Allocating a new
     // int[height] each time generates thousands of short-lived arrays per
     // search. A per-thread buffer is allocated once and reused forever.
-    private static final int MAX_HEIGHT = 32; // safe upper bound
+    private static final int MAX_HEIGHT = 32;
     private static final ThreadLocal<int[]> CLEAR_BUFFER = ThreadLocal.withInitial(() -> new int[MAX_HEIGHT]);
 
     public FastBoard(int height) {
@@ -96,13 +96,11 @@ public class FastBoard {
     /**
      * Standard Tetris line-clearing logic using a reusable ThreadLocal buffer.
      *
-     * <p>
      * The buffer is a plain int[] that is reused across calls on the same
      * thread. After compacting non-full rows from the bottom up, the top
      * {@code cleared} slots (which were never written in this call) are zeroed
      * before copying back, matching the behaviour of the original fresh-array
      * allocation.
-     * </p>
      *
      * @return Number of lines cleared.
      */

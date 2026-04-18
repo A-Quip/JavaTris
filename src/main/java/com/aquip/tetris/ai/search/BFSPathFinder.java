@@ -16,28 +16,25 @@ import java.util.*;
  * Detects all possible legal placements for a piece from a given starting
  * state. Optimized for performance by pruning spatial duplicates.
  *
- * <h3>Performance notes</h3>
- * <ul>
- * <li><b>#1 – boolean visited array</b>: The BFS visited set is bounded by
+ * boolean visited array: The BFS visited set is bounded by
  * rotation × y × x, which is at most ~1,800 states. A flat
  * {@code boolean[]} indexed by a packed int is vastly faster than a
  * {@code HashSet<BFSNode>}: no boxing, no hash computation, no collision
- * chains, and a trivial {@code Arrays.fill} reset.</li>
- * <li><b>#2 – ArrayDeque queue</b>: {@code LinkedList} allocates a
+ * chains, and a trivial {@code Arrays.fill} reset.
+ * ArrayDeque queue: {@code LinkedList} allocates a
  * {@code Node} wrapper for every enqueue. {@code ArrayDeque} is
  * array-backed, cache-friendly, and allocation-free for queue
- * operations.</li>
- * <li><b>#3 – int placement key</b>: Deduplifying final placements with
+ * operations.
+ * int placement key: Deduplifying final placements with
  * {@code String} concatenation creates a new {@code String} object per
  * candidate. Encoding (rotation, y, x) into a single {@code int} and
- * using a {@code boolean[]} removes all string allocation.</li>
- * </ul>
+ * using a {@code boolean[]} removes all string allocation.
  */
 public class BFSPathFinder {
 
     private final ConfigState config;
 
-    // --- State-space bounds for the visited / placement arrays (#1, #3) -----
+    // --- State-space bounds for the visited / placement arrays -----
     // Covers the full reachable position space including SRS kick offsets.
     // x: -3 to +13 → X_RANGE = 17, X_OFFSET = 3
     // y: -3 to +26 → Y_RANGE = 30, Y_OFFSET = 3
@@ -148,7 +145,6 @@ public class BFSPathFinder {
         Arrays.fill(placements, false);
 
         List<Placement> results = new ArrayList<>();
-        // #2: ArrayDeque instead of LinkedList — no per-element Node allocation
         Queue<BFSNode> queue = new ArrayDeque<>();
 
         BFSNode root = new BFSNode(currentPiece,
@@ -248,14 +244,14 @@ public class BFSPathFinder {
         int nextRotations = node.rotations;
         int nextLowestY = node.lowestY;
 
-        // 1. Lowest Y Reset
+        // Lowest Y Reset
         if (next.y > nextLowestY) {
             nextLowestY = next.y;
             nextLockTicks = 0;
             nextSlides = 0;
             nextRotations = 0;
         } else if (groundedBefore) {
-            // 2. Limit-based Reset
+            // Limit-based Reset
             boolean reset = false;
             if (moved && nextSlides < config.maxSlides) {
                 nextSlides++;
@@ -270,7 +266,7 @@ public class BFSPathFinder {
             nextLockTicks = 0;
         }
 
-        // #1: Check the boolean array before allocating a BFSNode.
+        // Check the boolean array before allocating a BFSNode.
         // If out of the pre-allocated range (degenerate SRS edge case), fall
         // through and create the node anyway — the lock timer will still
         // terminate the BFS.
@@ -288,11 +284,9 @@ public class BFSPathFinder {
     /**
      * Records a placement if it hasn't been seen before in this BFS call.
      *
-     * <p>
-     * Uses the same int-encoded key as the visited array (#3) instead of
+     * Uses the same int-encoded key as the visited array instead of
      * building a {@code String} per candidate, eliminating all string
      * allocation in the hot path.
-     * </p>
      */
     private void addPlacementIfUnique(List<Placement> results,
             boolean[] placements, BFSNode node,
