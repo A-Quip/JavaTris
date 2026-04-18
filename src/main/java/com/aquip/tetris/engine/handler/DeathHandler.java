@@ -6,6 +6,7 @@ import com.aquip.tetris.piece.PieceRegistry;
 import com.aquip.tetris.state.MatchState;
 import com.aquip.tetris.state.PlayerState;
 import com.aquip.tetris.state.StatusState;
+import com.aquip.tetris.garbage.GarbageSpike;
 
 public class DeathHandler {
 
@@ -46,36 +47,38 @@ public class DeathHandler {
     // APPLY GARBAGE TO BOARD
     // =====================
     private void applyPendingGarbage(PlayerState player) {
-
         var garbage = player.garbage.incoming;
         if (garbage == null) {
             return;
         }
 
-        int lines = garbage.pollAllReady();
-
-        if (lines <= 0)
+        var spikes = garbage.pollAllReady();
+        if (spikes.isEmpty())
             return;
 
         int[][] board = player.board.board;
         int width = board[0].length;
         int height = board.length;
 
-        for (int i = 0; i < lines; i++) {
+        for (GarbageSpike spike : spikes) {
 
-            // Shift up
-            for (int y = 0; y < height - 1; y++) {
-                board[y] = board[y + 1];
+            int lines = spike.getLines();
+            int hole = spike.getHole();
+
+            for (int i = 0; i < lines; i++) {
+
+                // Shift up
+                for (int y = 0; y < height - 1; y++) {
+                    board[y] = board[y + 1];
+                }
+
+                int[] row = new int[width];
+                for (int x = 0; x < width; x++) {
+                    row[x] = (x == hole) ? 0 : 1;
+                }
+
+                board[height - 1] = row;
             }
-
-            int[] row = new int[width];
-            int hole = (int) (Math.random() * width);
-
-            for (int x = 0; x < width; x++) {
-                row[x] = (x == hole) ? 0 : 1;
-            }
-
-            board[height - 1] = row;
         }
     }
 

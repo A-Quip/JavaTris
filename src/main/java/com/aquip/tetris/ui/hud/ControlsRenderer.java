@@ -19,13 +19,10 @@ public class ControlsRenderer {
         int y = area.y + 24 + lineHeight;
 
         if (state.player.getType() == PlayerType.AI) {
-            g.drawString("Planning AI", x, y);
+            String diff = state.aiConfig != null ? state.aiConfig.getDifficulty().name() : "Default";
+            g.drawString("DIFFICULTY:", x, y);
             y += lineHeight;
-            g.drawString("Searches placements", x, y);
-            y += lineHeight;
-            g.drawString("Evaluates board risk", x, y);
-            y += lineHeight;
-            g.drawString("Uses hold when useful", x, y);
+            g.drawString("   " + diff, x, y);
             return;
         }
 

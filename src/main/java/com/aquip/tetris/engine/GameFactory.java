@@ -53,6 +53,9 @@ public class GameFactory {
             inputSources.add(source);
 
             PlayerState playerState = new PlayerState(player, config);
+            if (player.getType() == PlayerType.AI) {
+                playerState.aiConfig = aiConfig;
+            }
 
             matchState.addPlayer(playerState);
         }

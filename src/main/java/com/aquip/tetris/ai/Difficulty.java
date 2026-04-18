@@ -3,9 +3,9 @@ package com.aquip.tetris.ai;
 public enum Difficulty {
 
     // beamW look delayMs ticksPerCmd
-    EASY(3, 1, 3000, 15),
-    MEDIUM(5, 2, 2000, 10),
-    HARD(10, 3, 1000, 8),
+    EASY(3, 1, 3000, 12),
+    MEDIUM(5, 2, 2000, 9),
+    HARD(10, 3, 1000, 7),
     SUPERHUMAN(50, 5, 0, 1);
 
     public final int beamWidth;

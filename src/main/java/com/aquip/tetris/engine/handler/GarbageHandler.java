@@ -71,7 +71,8 @@ public class GarbageHandler {
             // =====================
             // SEND
             // =====================
-            target.garbage.incoming.add(remaining);
+            int hole = (int) (Math.random() * target.config.boardWidth);
+            target.garbage.incoming.add(remaining, hole);
         }
     }
 

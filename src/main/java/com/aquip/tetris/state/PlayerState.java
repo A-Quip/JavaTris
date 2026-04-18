@@ -1,12 +1,14 @@
 package com.aquip.tetris.state;
 
 import com.aquip.tetris.player.Player;
+import com.aquip.tetris.ai.AIConfig;
 
 public class PlayerState {
 
     public Player player;
 
     public ConfigState config;
+    public AIConfig aiConfig;
 
     public BoardState board;
     public PieceState piece;

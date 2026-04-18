@@ -1,6 +1,8 @@
 package com.aquip.tetris.garbage;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Queue;
 
 public class GarbageQueue {
@@ -15,14 +17,14 @@ public class GarbageQueue {
     // ADD GARBAGE
     // =====================
 
-    public void add(int lines) {
+    public void add(int lines, int hole) {
         if (lines <= 0) return;
-        queue.add(new GarbageSpike(lines, 0, 0));
+        queue.add(new GarbageSpike(lines, hole, 0, 0));
     }
 
-    public void add(int lines, int sendOnPiece, int sendAfterTick) {
+    public void add(int lines, int hole, int sendOnPiece, int sendAfterTick) {
         if (lines <= 0) return;
-        queue.add(new GarbageSpike(lines, sendOnPiece, sendAfterTick));
+        queue.add(new GarbageSpike(lines, hole, sendOnPiece, sendAfterTick));
     }
 
     // =====================
@@ -59,24 +61,23 @@ public class GarbageQueue {
     // Removes ALL garbage that is ready to be applied.
     // (Currently: everything, since delay isn't enforced yet)
     //
-    public int pollAllReady() {
+    public List<GarbageSpike> pollAllReady() {
 
-        int total = 0;
+        List<GarbageSpike> result = new ArrayList<>();
 
         while (!queue.isEmpty()) {
-            GarbageSpike spike = queue.poll();
-            total += spike.getLines();
+            result.add(queue.poll());
         }
 
-        return total;
+        return result;
     }
 
     // =====================
     // FUTURE (DELAY SUPPORT)
     // =====================
-    public int pollReady(int currentPiece, int currentTick) {
+    public List<GarbageSpike> pollReady(int currentPiece, int currentTick) {
 
-        int total = 0;
+        List<GarbageSpike> result = new ArrayList<>();
 
         while (!queue.isEmpty()) {
 
@@ -88,11 +89,10 @@ public class GarbageQueue {
 
             if (!ready) break;
 
-            total += spike.getLines();
-            queue.poll();
+            result.add(queue.poll());
         }
 
-        return total;
+        return result;
     }
 
     // =====================
