@@ -77,9 +77,9 @@ public class MenuPanel extends JPanel {
         g2.setFont(new Font("Monospaced", Font.PLAIN, 16));
         g2.setColor(Color.WHITE);
         if (state.selectionIndex < modes.length) {
-            g2.drawString(selectedMode.description(), panelX + 36, panelY + 296);
+            g2.drawString(selectedMode.description(), panelX + 36, panelY + 320);
         } else {
-            g2.drawString("Adjust AI level (Easy/Medium/Hard/Superhuman)", panelX + 36, panelY + 296);
+            g2.drawString("Adjust AI level (Easy/Medium/Hard/Superhuman)", panelX + 36, panelY + 320);
         }
         g2.drawString("Menu: Up/Down/Left/Right   Start: Enter", panelX + 36, panelY + 360);
         g2.drawString("In-game: Esc menu, R or Enter restart", panelX + 36, panelY + 388);
