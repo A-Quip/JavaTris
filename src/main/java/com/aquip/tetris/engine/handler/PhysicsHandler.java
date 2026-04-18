@@ -27,6 +27,7 @@ public class PhysicsHandler implements PlayerHandler {
         // 1. ROTATION
         // =====================
         current = applyRotation(player, ctx, current);
+        boolean rotatedThisTick = move.rotated;
 
         // =====================
         // 2. HORIZONTAL MOVE
@@ -39,7 +40,9 @@ public class PhysicsHandler implements PlayerHandler {
                 moved = true;
 
                 move.moved = true;
-                move.rotated = false;
+                if (!rotatedThisTick) {
+                    move.rotated = false;
+                }
             }
         }
 
@@ -54,7 +57,9 @@ public class PhysicsHandler implements PlayerHandler {
                 moved = true;
 
                 move.moved = true;
-                move.rotated = false;
+                if (!rotatedThisTick) {
+                    move.rotated = false;
+                }
             }
         }
 
@@ -75,7 +80,9 @@ public class PhysicsHandler implements PlayerHandler {
             }
 
             if (steps > 0) {
-                move.rotated = false; // Clear flag if vertical move occurred
+                if (!rotatedThisTick) {
+                    move.rotated = false;
+                }
                 move.moved = true;
             }
             grounded = true;

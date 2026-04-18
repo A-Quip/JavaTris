@@ -65,10 +65,23 @@ public class MenuPanel extends JPanel {
             optionY += 34;
         }
 
+        // Add Difficulty row
+        if (state.selectionIndex == modes.length) {
+            g2.setColor(new Color(255, 221, 92));
+            g2.drawString("> Difficulty: < " + state.selectedDifficulty().name() + " >", panelX + 36, optionY);
+        } else {
+            g2.setColor(Color.WHITE);
+            g2.drawString("  Difficulty: < " + state.selectedDifficulty().name() + " >", panelX + 36, optionY);
+        }
+
         g2.setFont(new Font("Monospaced", Font.PLAIN, 16));
         g2.setColor(Color.WHITE);
-        g2.drawString(selectedMode.description(), panelX + 36, panelY + 296);
-        g2.drawString("Menu: Up / Down   Start: Enter", panelX + 36, panelY + 360);
+        if (state.selectionIndex < modes.length) {
+            g2.drawString(selectedMode.description(), panelX + 36, panelY + 296);
+        } else {
+            g2.drawString("Adjust AI level (Easy/Medium/Hard/Superhuman)", panelX + 36, panelY + 296);
+        }
+        g2.drawString("Menu: Up/Down/Left/Right   Start: Enter", panelX + 36, panelY + 360);
         g2.drawString("In-game: Esc menu, R or Enter restart", panelX + 36, panelY + 388);
     }
 }

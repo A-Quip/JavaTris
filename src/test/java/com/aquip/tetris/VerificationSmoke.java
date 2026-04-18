@@ -1,7 +1,11 @@
 package com.aquip.tetris;
 
 import com.aquip.tetris.ai.AIConfig;
-import com.aquip.tetris.ai.HeuristicAI;
+import com.aquip.tetris.ai.AIController;
+import com.aquip.tetris.ai.eval.Heuristic;
+import com.aquip.tetris.ai.search.BFSPathFinder;
+import com.aquip.tetris.ai.search.BeamSearch;
+import com.aquip.tetris.input.PlayerInputSource;
 import com.aquip.tetris.engine.GameEngine;
 import com.aquip.tetris.engine.TickContext;
 import com.aquip.tetris.engine.handler.DeathHandler;
@@ -39,8 +43,7 @@ public final class VerificationSmoke {
     private static void verifyMenuStartsSinglePlayer() {
         MenuEngine menu = new MenuEngine(
                 new File("config/config.yml"),
-                new MenuInputMapper()
-        );
+                new MenuInputMapper());
 
         InputFrame frame = new InputFrame();
         frame.pressed.add(KeyEvent.VK_ENTER);
@@ -49,37 +52,42 @@ public final class VerificationSmoke {
 
         require(game != null, "Menu did not start a game");
         require(game.getMatchState().players.size() == 1, "Menu did not create a single-player match");
-        require(game.getMatchState().players.get(0).player.getType() == PlayerType.HUMAN, "Primary player is not human");
+        require(game.getMatchState().players.get(0).player.getType() == PlayerType.HUMAN,
+                "Primary player is not human");
     }
 
     private static void verifyMenuModesCreateExpectedPlayers() {
         MenuEngine menu = new MenuEngine(
                 new File("config/config.yml"),
-                new MenuInputMapper()
-        );
+                new MenuInputMapper());
 
         menu.state.selectionIndex = GameMode.VS_AI.ordinal();
         GameEngine vsAi = menu.createGame();
         require(vsAi.getMatchState().players.size() == 2, "Vs AI should create two players");
-        require(vsAi.getMatchState().players.get(1).player.getType() == PlayerType.AI, "Vs AI should create an AI opponent");
+        require(vsAi.getMatchState().players.get(1).player.getType() == PlayerType.AI,
+                "Vs AI should create an AI opponent");
 
         menu.state.selectionIndex = GameMode.TWO_PLAYER.ordinal();
         GameEngine twoPlayer = menu.createGame();
         require(twoPlayer.getMatchState().players.size() == 2, "2 Players mode should create two players");
-        require(twoPlayer.getMatchState().players.get(1).player.getType() == PlayerType.HUMAN, "2 Players mode should create a second human");
+        require(twoPlayer.getMatchState().players.get(1).player.getType() == PlayerType.HUMAN,
+                "2 Players mode should create a second human");
 
         menu.state.selectionIndex = GameMode.AI_DEMO.ordinal();
         GameEngine aiDemo = menu.createGame();
         require(aiDemo.getMatchState().players.size() == 1, "AI Demo should create one player");
-        require(aiDemo.getMatchState().players.get(0).player.getType() == PlayerType.AI, "AI Demo should create an AI player");
+        require(aiDemo.getMatchState().players.get(0).player.getType() == PlayerType.AI,
+                "AI Demo should create an AI player");
     }
 
     private static void verifyGravityCurve() {
         ConfigState config = new ConfigState();
 
         require(config.gravityThresholdForPieces(0) == 60, "Base gravity threshold is wrong");
-        require(config.gravityThresholdForPieces(50) < config.gravityThresholdForPieces(0), "Gravity threshold does not accelerate");
-        require(config.gravityThresholdForPieces(2_000) == config.minimumGravityTick, "Gravity threshold does not clamp to minimum");
+        require(config.gravityThresholdForPieces(50) < config.gravityThresholdForPieces(0),
+                "Gravity threshold does not accelerate");
+        require(config.gravityThresholdForPieces(2_000) == config.minimumGravityTick,
+                "Gravity threshold does not clamp to minimum");
         require(config.softDropThresholdForPieces(500) == 1, "Soft drop threshold should bottom out at 1");
     }
 
@@ -108,13 +116,34 @@ public final class VerificationSmoke {
         MatchState match = new MatchState();
         match.addPlayer(playerState);
 
-        int delay = 0;
-        AIConfig aiConfig = new AIConfig(delay);
+        AIConfig aiConfig = AIConfig.defaults();
+        AIController controller = new AIController(
+                aiConfig,
+                new BeamSearch(new BFSPathFinder(playerState.config), new Heuristic(), aiConfig));
 
-        HeuristicAI ai = new HeuristicAI(aiPlayer, aiConfig);
-        PlayerInput input = ai.decide(aiPlayer, match);
+        PlayerInputSource source = controller.createInputSource(aiPlayer);
 
-        require(input.inputs != null && !input.inputs.isEmpty(), "AI did not produce a planned input");
+        InputFrame frame = new InputFrame();
+        frame.state = match;
+
+        // First poll starts the search
+        source.poll(frame);
+
+        // Wait up to 1000ms for result
+        for (int i = 0; i < 100; i++) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+            }
+            PlayerInput input = source.poll(frame);
+            if (!input.inputs.isEmpty()) {
+                controller.shutdown();
+                return; // Success
+            }
+        }
+
+        controller.shutdown();
+        require(false, "AI did not produce a planned input within 1000ms");
     }
 
     private static void verifySpawnCollisionDeath() {

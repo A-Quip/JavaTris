@@ -4,14 +4,14 @@ boardHeight: 20
 spawnBufferRows: 4
 
 # Timing (in ticks)
-gravityTick: 60   # how fast pieces fall
+gravityTick: 60 # how fast pieces fall
 minimumGravityTick: 1
 gravityStepEveryPieces: 10
 gravityStepAmount: 1
-lockTick: 30      # delay before piece locks
+lockTick: 30 # delay before piece locks
 
 # Piece generation
-useBag: true      # 7-bag randomizer (true = modern Tetris)
+useBag: true # 7-bag randomizer (true = modern Tetris)
 
 clearTable:
 
@@ -87,4 +87,4 @@ clearTable:
 
 # AI settings
 ai:
-  tickDelay: 5    # ticks between each AI input; 0 = one input per tick
+  tickDelay: 120 # ticks between each AI input; 0 = one input per tick

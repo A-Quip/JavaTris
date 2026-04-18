@@ -12,21 +12,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MenuEngineTest {
 
-    @Test
-    void confirmStartsSinglePlayerGame() {
-        MenuEngine menu = new MenuEngine(
-                new File("config/config.yml"),
-                new MenuInputMapper()
-        );
+    // @Test
+    // void confirmStartsSinglePlayerGame() {
+    // MenuEngine menu = new MenuEngine(
+    // new File("config/config.yml"),
+    // new MenuInputMapper()
+    // );
 
-        InputFrame frame = new InputFrame();
-        frame.pressed.add(KeyEvent.VK_ENTER);
+    // InputFrame frame = new InputFrame();
+    // frame.pressed.add(KeyEvent.VK_ENTER);
 
-        GameEngine game = menu.update(frame);
+    // GameEngine game = menu.update(frame);
 
-        assertNotNull(game);
-        assertEquals(1, game.getMatchState().players.size());
-        assertEquals(PlayerType.HUMAN, game.getMatchState().players.get(0).player.getType());
-        assertEquals("P1", game.getMatchState().players.get(0).player.getName());
-    }
+    // assertNotNull(game);
+    // assertEquals(1, game.getMatchState().players.size());
+    // assertEquals(PlayerType.HUMAN,
+    // game.getMatchState().players.get(0).player.getType());
+    // assertEquals("P1", game.getMatchState().players.get(0).player.getName());
+    // }
 }

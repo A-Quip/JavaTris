@@ -1,7 +1,6 @@
 package com.aquip.tetris.ui.menu;
 
 import com.aquip.tetris.ai.AIConfig;
-import com.aquip.tetris.config.AIConfigParser;
 import com.aquip.tetris.config.GameConfigParser;
 import com.aquip.tetris.engine.GameEngine;
 import com.aquip.tetris.input.InputFrame;
@@ -16,7 +15,7 @@ public class MenuEngine {
     private final MenuInputMapper mapper;
 
     public MenuEngine(File gameConfigFile,
-                      MenuInputMapper mapper) {
+            MenuInputMapper mapper) {
 
         this.gameConfigFile = gameConfigFile;
         this.state = new MenuState();
@@ -35,12 +34,25 @@ public class MenuEngine {
     }
 
     private void handleInput(MenuInput input) {
+        int maxIndex = GameMode.values().length; // +1 for Difficulty row
 
         switch (input) {
 
             case UP -> state.selectionIndex = Math.max(0, state.selectionIndex - 1);
-            case DOWN -> state.selectionIndex = Math.min(GameMode.values().length - 1, state.selectionIndex + 1);
-            case LEFT, RIGHT -> { }
+            case DOWN -> state.selectionIndex = Math.min(maxIndex, state.selectionIndex + 1);
+
+            case LEFT -> {
+                if (state.selectionIndex == maxIndex) {
+                    int diffs = com.aquip.tetris.ai.Difficulty.values().length;
+                    state.difficultyIndex = (state.difficultyIndex - 1 + diffs) % diffs;
+                }
+            }
+            case RIGHT -> {
+                if (state.selectionIndex == maxIndex) {
+                    int diffs = com.aquip.tetris.ai.Difficulty.values().length;
+                    state.difficultyIndex = (state.difficultyIndex + 1) % diffs;
+                }
+            }
 
             case CONFIRM -> {
                 if (state.screen == MenuOption.PLAY) {
@@ -56,14 +68,15 @@ public class MenuEngine {
 
     private GameEngine evaluateState() {
 
-        if (state.screen != null) return null;
+        if (state.screen != null)
+            return null;
 
         return createGame();
     }
 
     public GameEngine createGame() {
         ConfigState config = GameConfigParser.parse(gameConfigFile);
-        AIConfig aiConfig = AIConfigParser.parse(gameConfigFile);
+        AIConfig aiConfig = new AIConfig(state.selectedDifficulty());
         return MenuGameFactory.createGame(state.selectedMode(), config, aiConfig);
     }
 

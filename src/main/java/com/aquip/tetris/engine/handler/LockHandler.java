@@ -35,23 +35,23 @@ public class LockHandler implements PlayerHandler {
         }
 
         // =====================
-        // 2. Detect "attempts" (not just successful moves)
+        // 2. Detect successful moves (Infinity rule)
         // =====================
-        boolean attemptedMove = ctx.moveX != 0;
-        boolean attemptedRotate = ctx.rotation != 0;
+        boolean moved = ctx.moveContext.moved;
+        boolean rotated = ctx.moveContext.rotated;
 
         boolean reset = false;
 
         if (grounded) {
 
-            // Slide attempts
-            if (attemptedMove && lock.slides < config.maxSlides) {
+            // Slide reset
+            if (moved && lock.slides < config.maxSlides) {
                 lock.slides++;
                 reset = true;
             }
 
-            // Rotation attempts
-            if (attemptedRotate && lock.rotations < config.maxRotations) {
+            // Rotation reset
+            if (rotated && lock.rotations < config.maxRotations) {
                 lock.rotations++;
                 reset = true;
             }

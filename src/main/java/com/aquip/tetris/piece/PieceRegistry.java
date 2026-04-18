@@ -64,6 +64,25 @@ public class PieceRegistry {
         return blocks;
     }
 
+    /**
+     * Converts a piece rotation into an array of bitmasks (one per row).
+     * Used for fast bitboard placement.
+     */
+    public int[] getRotationMasks(PieceType type, int rotation) {
+        int[][] shape = getRotation(type, rotation);
+        int[] masks = new int[shape.length];
+        for (int y = 0; y < shape.length; y++) {
+            int mask = 0;
+            for (int x = 0; x < shape[y].length; x++) {
+                if (shape[y][x] != 0) {
+                    mask |= (1 << x);
+                }
+            }
+            masks[y] = mask;
+        }
+        return masks;
+    }
+
     // =========================
     // ROTATIONS (unchanged)
     // =========================

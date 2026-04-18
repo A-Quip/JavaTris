@@ -19,12 +19,22 @@ public class MenuRenderer {
     }
 
     private void renderPlayScreen(MenuState state) {
-        for (GameMode mode : GameMode.values()) {
-            String prefix = mode == state.selectedMode() ? "> " : "  ";
+        GameMode[] modes = GameMode.values();
+        for (int i = 0; i < modes.length; i++) {
+            GameMode mode = modes[i];
+            String prefix = i == state.selectionIndex ? "> " : "  ";
             System.out.println(prefix + mode.label());
         }
 
+        // Add Difficulty row
+        String diffPrefix = state.selectionIndex == modes.length ? "> " : "  ";
+        System.out.println(diffPrefix + "Difficulty: < " + state.selectedDifficulty().name() + " >");
+
         System.out.println();
-        System.out.println(state.selectedMode().description());
+        if (state.selectionIndex < modes.length) {
+            System.out.println(state.selectedMode().description());
+        } else {
+            System.out.println("Adjust AI difficulty level (affects search depth and speed).");
+        }
     }
 }
