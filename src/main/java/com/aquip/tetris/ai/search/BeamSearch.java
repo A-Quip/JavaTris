@@ -91,7 +91,7 @@ public class BeamSearch {
             PieceType heldType = (snapshot.heldPiece != null) ? snapshot.heldPiece : snapshot.nextQueue[0];
             int nextQueueIndex = (snapshot.heldPiece != null) ? 0 : 1;
 
-            Piece heldPiece = new Piece(heldType, 0, 3, 3); // Standard spawn position
+            Piece heldPiece = new Piece(heldType, 0, 3, 3);
             List<BFSPathFinder.Placement> heldPlacements = pathFinder.findAll(
                     initialBoard, heldPiece, new LockState(), new GravityState(),
                     snapshot.piecesPlacedCount, config.ticksPerCommand());
