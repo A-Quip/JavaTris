@@ -53,10 +53,12 @@ public class QueueHandler {
     // =====================
     private void handleHold(PlayerState player) {
 
-        if (!player.next.canHold) return;
+        if (!player.next.canHold)
+            return;
 
         Piece current = player.piece.currentPiece;
-        if (current == null) return;
+        if (current == null)
+            return;
 
         PieceType held = player.next.held;
 

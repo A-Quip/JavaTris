@@ -46,9 +46,9 @@ public class ControlsRenderer {
             y += lineHeight;
             g.drawString("E      Hold", x, y);
         } else {
-            g.drawString("Left   Move", x, y);
+            g.drawString("Left   Left", x, y);
             y += lineHeight;
-            g.drawString("Right  Move", x, y);
+            g.drawString("Right  Right", x, y);
             y += lineHeight;
             g.drawString("Down   Soft drop", x, y);
             y += lineHeight;

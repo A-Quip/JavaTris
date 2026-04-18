@@ -32,8 +32,7 @@ public class TickHandler {
             PlacementHandler placementHandler,
             ScoreHandler scoreHandler,
             GarbageHandler garbageHandler,
-            DeathHandler deathHandler
-    ) {
+            DeathHandler deathHandler) {
         this.matchState = matchState;
         this.inputHandler = inputHandler;
         this.gravityHandler = gravityHandler;

@@ -12,7 +12,8 @@ public class PhysicsHandler implements PlayerHandler {
     @Override
     public void apply(PlayerState player, TickContext context) {
 
-        if (!player.piece.hasPiece()) return;
+        if (!player.piece.hasPiece())
+            return;
 
         PlayerTickContext ctx = context.get(player);
         MoveContext move = ctx.moveContext;
@@ -62,14 +63,21 @@ public class PhysicsHandler implements PlayerHandler {
         // =====================
         if (ctx.hardDrop) {
             move.hardDrop = true;
+            int steps = 0;
 
             while (true) {
                 Piece next = current.displace(0, 1);
-                if (collides(player, next)) break;
+                if (collides(player, next))
+                    break;
                 current = next;
                 moved = true;
+                steps++; // Track displacement
             }
 
+            if (steps > 0) {
+                move.rotated = false; // Clear flag if vertical move occurred
+                move.moved = true;
+            }
             grounded = true;
         }
 
@@ -85,8 +93,10 @@ public class PhysicsHandler implements PlayerHandler {
         // =====================
         player.piece.currentPiece = current;
 
-        if (moved) ctx.pieceMoved = true;
-        if (grounded) ctx.pieceGrounded = true;
+        if (moved)
+            ctx.pieceMoved = true;
+        if (grounded)
+            ctx.pieceGrounded = true;
     }
 
     // =====================
@@ -104,7 +114,8 @@ public class PhysicsHandler implements PlayerHandler {
             Piece before = current;
             Piece rotated = tryRotate(player, current, step);
 
-            if (rotated == null) break;
+            if (rotated == null)
+                break;
 
             current = rotated;
 
@@ -140,8 +151,7 @@ public class PhysicsHandler implements PlayerHandler {
                     piece.type,
                     to,
                     piece.x + dx,
-                    piece.y + dy
-            );
+                    piece.y + dy);
 
             if (!collides(player, candidate)) {
                 return candidate;
@@ -163,7 +173,8 @@ public class PhysicsHandler implements PlayerHandler {
         for (int y = 0; y < shape.length; y++) {
             for (int x = 0; x < shape[y].length; x++) {
 
-                if (shape[y][x] == 0) continue;
+                if (shape[y][x] == 0)
+                    continue;
 
                 int bx = piece.x + x;
                 int by = piece.y + y;
