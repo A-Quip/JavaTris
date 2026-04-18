@@ -82,7 +82,8 @@ public class BeamSearch {
 
         for (BFSPathFinder.Placement p : currentPlacements) {
             MoveSequence path = new MoveSequence(p.commands, p.expectedPositions, snapshot.piecesPlacedCount);
-            beam.add(createInitialNode(initialBoard, snapshot.nextQueue, 0, p, path, true));
+            beam.add(createInitialNode(initialBoard, snapshot.nextQueue, 0, p, path, true, 
+                    snapshot.comboCount, snapshot.b2bCount));
         }
 
         // Consider HOLD path
@@ -100,7 +101,8 @@ public class BeamSearch {
                         Collections.singletonList(GameInput.HOLD_PIECE),
                         new Piece[0],
                         snapshot.piecesPlacedCount);
-                beam.add(createInitialNode(initialBoard, snapshot.nextQueue, nextQueueIndex, p, holdOnlyPath, false));
+                beam.add(createInitialNode(initialBoard, snapshot.nextQueue, nextQueueIndex, p, 
+                        holdOnlyPath, false, snapshot.comboCount, snapshot.b2bCount));
             }
         }
 
@@ -212,9 +214,9 @@ public class BeamSearch {
 
     private SimNode createInitialNode(FastBoard board, PieceType[] queue,
             int nextQueueIdx, BFSPathFinder.Placement p,
-            MoveSequence path, boolean canHold) {
+            MoveSequence path, boolean canHold, int combo, int b2b) {
         SimNode root = new SimNode(board, path, nextQueueIdx,
-                null, new LockState(), new GravityState(), canHold, 0);
+                null, new LockState(), new GravityState(), canHold, 0, combo, b2b > 0);
         return root.applyPlacement(p, queue);
     }
 

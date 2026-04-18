@@ -26,6 +26,7 @@ public class Heuristic {
      * @return A numerical score representing the value of the state.
      */
     public double evaluate(SimNode node) {
-        return FeatureExtractor.evaluateScore(node.board, node.totalLinesCleared, weights);
+        return FeatureExtractor.evaluateScore(node.board, node.totalLinesCleared, 
+                node.comboCount, node.isBackToBack, weights);
     }
 }

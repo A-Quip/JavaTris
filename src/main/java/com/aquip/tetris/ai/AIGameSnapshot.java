@@ -27,6 +27,8 @@ public final class AIGameSnapshot {
     public final int lowestY;
     public final int gravityTicks;
     public final boolean canHold;
+    public final int comboCount;
+    public final int b2bCount;
 
     public final boolean lockHardDrop;
     public final boolean gravitySoftDrop;
@@ -36,8 +38,8 @@ public final class AIGameSnapshot {
     public AIGameSnapshot(int piecesPlacedCount, int currentTick, Piece currentPiece, 
                           PieceType heldPiece, PieceType[] nextQueue, int[][] board, 
                           int lockTicks, int lockSlides, int lockRotations, int lowestY, 
-                          int gravityTicks, boolean canHold, boolean lockHardDrop, 
-                          boolean gravitySoftDrop, ConfigState config) {
+                          int gravityTicks, boolean canHold, int comboCount, int b2bCount,
+                          boolean lockHardDrop, boolean gravitySoftDrop, ConfigState config) {
         this.piecesPlacedCount = piecesPlacedCount;
         this.currentTick = currentTick;
         this.currentPiece = currentPiece;
@@ -50,6 +52,8 @@ public final class AIGameSnapshot {
         this.lowestY = lowestY;
         this.gravityTicks = gravityTicks;
         this.canHold = canHold;
+        this.comboCount = comboCount;
+        this.b2bCount = b2bCount;
         this.lockHardDrop = lockHardDrop;
         this.gravitySoftDrop = gravitySoftDrop;
         this.config = config;
@@ -83,6 +87,8 @@ public final class AIGameSnapshot {
             player.lock.lowestY,
             player.gravity.gravityTicks,
             player.next.canHold,
+            player.combo.amount(),
+            player.b2b.amount(),
             player.lock.hardDrop,
             player.gravity.softDrop,
             player.config

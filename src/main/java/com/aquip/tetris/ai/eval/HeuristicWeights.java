@@ -20,6 +20,9 @@ public class HeuristicWeights {
     // Setup specific weights
     public double tetrisWellDepth = 0.5; // Positive reward for maintaining a deep well
     public double tSpinSetups = 2.0;     // Massive reward for having a T-spin setup
+    
+    public double combo = 1.0;          // Reward per combo level
+    public double b2b = 1.5;            // Reward for maintaining Back-to-Back
 
     public HeuristicWeights() {
     }
@@ -40,5 +43,7 @@ public class HeuristicWeights {
         this.linesCleared = linesCleared;
         this.tetrisWellDepth = 0.5;
         this.tSpinSetups = 2.0;
+        this.combo = 1.0;
+        this.b2b = 1.5;
     }
 }

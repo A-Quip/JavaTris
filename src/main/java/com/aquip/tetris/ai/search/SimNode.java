@@ -25,6 +25,8 @@ public class SimNode {
     public final boolean canHold;
 
     public final int totalLinesCleared;
+    public final int comboCount;
+    public final boolean isBackToBack;
 
     /**
      * Cached heuristic score. Set by BeamSearch after parallel expansion so that
@@ -35,7 +37,7 @@ public class SimNode {
 
     public SimNode(FastBoard board, MoveSequence rootPath, int queueIndex,
             Piece currentPiece, LockState lockState, GravityState gravityState,
-            boolean canHold, int totalLinesCleared) {
+            boolean canHold, int totalLinesCleared, int comboCount, boolean isBackToBack) {
         this.board = board;
         this.rootPath = rootPath;
         this.queueIndex = queueIndex;
@@ -44,6 +46,8 @@ public class SimNode {
         this.gravityState = gravityState;
         this.canHold = canHold;
         this.totalLinesCleared = totalLinesCleared;
+        this.comboCount = comboCount;
+        this.isBackToBack = isBackToBack;
     }
 
     /**
@@ -71,44 +75,47 @@ public class SimNode {
 
         int cleared = nextBoard.place(shiftedMasks, p.finalPiece.y);
 
-        // Non-linear scoring for setups
-        int points = 0;
-        if (cleared == 1)
-            points = 1;
-        else if (cleared == 2)
-            points = 3;
-        else if (cleared == 3)
-            points = 6;
-        else if (cleared == 4)
-            points = 15;
-
-        // Spin Detection
+        // --- SCORE & STREAK UPDATES ---
+        boolean isSpin = false;
         if (p.finalPiece.type == PieceType.T) {
             boolean rotatedLast = false;
             for (int i = p.commands.size() - 1; i >= 0; i--) {
                 GameInput cmd = p.commands.get(i);
-                if (cmd == GameInput.HARD_DROP)
-                    continue;
+                if (cmd == GameInput.HARD_DROP || cmd == GameInput.NONE) continue;
                 if (cmd == GameInput.ROTATE_CW || cmd == GameInput.ROTATE_CCW || cmd == GameInput.ROTATE_180) {
                     rotatedLast = true;
                 }
                 break;
             }
             if (rotatedLast) {
+                int cx = p.finalPiece.x + 1;
+                int cy = p.finalPiece.y + 1;
                 int corners = 0;
-                if (board.isOccupied(p.finalPiece.x, p.finalPiece.y))
-                    corners++;
-                if (board.isOccupied(p.finalPiece.x + 2, p.finalPiece.y))
-                    corners++;
-                if (board.isOccupied(p.finalPiece.x, p.finalPiece.y + 2))
-                    corners++;
-                if (board.isOccupied(p.finalPiece.x + 2, p.finalPiece.y + 2))
-                    corners++;
-                if (corners >= 3) {
-                    points += (cleared > 0) ? (cleared * 10) : 5; // T-Spin reward
-                }
+                if (board.isOccupied(cx - 1, cy - 1)) corners++;
+                if (board.isOccupied(cx + 1, cy - 1)) corners++;
+                if (board.isOccupied(cx - 1, cy + 1)) corners++;
+                if (board.isOccupied(cx + 1, cy + 1)) corners++;
+                if (corners >= 3) isSpin = true;
             }
         }
+
+        int nextCombo = (cleared > 0) ? (comboCount + 1) : 0;
+        boolean nextB2B = isBackToBack;
+        if (cleared > 0) {
+            boolean b2bAction = (cleared == 4 || isSpin);
+            if (b2bAction) {
+                // Keep B2B alive or start it if already active? (Following standard rules)
+                // In many modern systems, B2B is active if the LAST clear was also B2B.
+            } else {
+                nextB2B = false;
+            }
+            if (b2bAction) nextB2B = true; 
+        }
+
+        int points = cleared;
+        if (isSpin) points += 5; // T-Spin bonus
+        if (nextCombo > 1) points += (nextCombo / 2); // Combo bonus
+        if (isBackToBack && (cleared == 4 || isSpin)) points += 2; // B2B bonus
 
         // Advance to next piece in queue
         PieceType nextType = (queueIndex < nextQueue.length) ? nextQueue[queueIndex] : null;
@@ -126,6 +133,8 @@ public class SimNode {
                 new LockState(),
                 new GravityState(),
                 true, // Can hold again after a placement locks
-                this.totalLinesCleared + points);
+                this.totalLinesCleared + points,
+                nextCombo,
+                nextB2B);
     }
 }
