@@ -34,12 +34,8 @@ public class BFSPathFinder {
 
     private final ConfigState config;
 
-    // --- State-space bounds for the visited / placement arrays -----
+    // State-space bounds for the visited / placement arrays
     // Covers the full reachable position space including SRS kick offsets.
-    // x: -3 to +13 → X_RANGE = 17, X_OFFSET = 3
-    // y: -3 to +26 → Y_RANGE = 30, Y_OFFSET = 3
-    // rotation: 0-3 → ROT_RANGE = 4
-    // Total array size: 4 × 30 × 17 = 2040 booleans ≈ 2 KB per thread
     private static final int X_OFFSET = 3;
     private static final int X_RANGE = 17;
     private static final int Y_OFFSET = 3;
@@ -81,9 +77,6 @@ public class BFSPathFinder {
         }
     }
 
-    // BFSNode no longer needs equals/hashCode — the boolean[] array handles
-    // all visited-state checks before a node is ever created, so BFSNode
-    // instances are never placed in a HashSet.
     private static class BFSNode {
         final Piece piece;
         final int gravityTicks;
@@ -138,7 +131,7 @@ public class BFSPathFinder {
     public List<Placement> findAll(FastBoard board, Piece currentPiece,
             LockState lock, GravityState gravity, int piecesPlaced, int ticksPerCommand) {
 
-        // Acquire and reset per-thread arrays (#1, #3)
+        // Acquire and reset per-thread arrays
         boolean[] visited = VISITED.get();
         boolean[] placements = PLACEMENTS.get();
         Arrays.fill(visited, false);
@@ -163,7 +156,7 @@ public class BFSPathFinder {
 
             boolean grounded = FastPhysics.collides(board, node.piece.displace(0, 1));
 
-            // --- TERMINAL STATES ---
+            // TERMINAL STATES
             Piece dropped = FastPhysics.hardDrop(board, node.piece);
             addPlacementIfUnique(results, placements, node, GameInput.HARD_DROP, dropped);
 
@@ -172,14 +165,18 @@ public class BFSPathFinder {
                 continue;
             }
 
-            // --- TRANSITIONS ---
+            // TRANSITIONS
             tryMove(board, node, -1, 0, GameInput.MOVE_LEFT, queue, visited, grounded, ticksPerCommand);
             tryMove(board, node, 1, 0, GameInput.MOVE_RIGHT, queue, visited, grounded, ticksPerCommand);
             tryRotate(board, node, 1, GameInput.ROTATE_CW, queue, visited, grounded, ticksPerCommand);
             tryRotate(board, node, -1, GameInput.ROTATE_CCW, queue, visited, grounded, ticksPerCommand);
             tryRotate(board, node, 2, GameInput.ROTATE_180, queue, visited, grounded, ticksPerCommand);
-            tryGravity(board, node, false, queue, visited, piecesPlaced, grounded, ticksPerCommand);
+
+            // Soft drop MUST be evaluated prior to NONE to ensure the faster soft-drop path
+            // claims the tile in the visited array first. Otherwise it will visit
+            // before the soft-drop and take a zig-zag path
             tryGravity(board, node, true, queue, visited, piecesPlaced, grounded, ticksPerCommand);
+            tryGravity(board, node, false, queue, visited, piecesPlaced, grounded, ticksPerCommand);
         }
 
         return results;
@@ -210,19 +207,46 @@ public class BFSPathFinder {
     private void tryGravity(FastBoard board, BFSNode node, boolean isSoftDrop,
             Queue<BFSNode> queue, boolean[] visited,
             int piecesPlaced, boolean groundedBefore, int ticksPerCommand) {
-        int nextGravityTicks = node.gravityTicks + ticksPerCommand;
-        Piece nextPiece = node.piece;
 
-        if (FastGravity.shouldFall(nextGravityTicks, isSoftDrop, config, piecesPlaced)) {
-            Piece fallen = FastPhysics.applyMove(board, node.piece, 0, 1);
-            if (fallen != null) {
-                nextPiece = fallen;
+        int nextGravityTicks = node.gravityTicks;
+        BFSNode currNode = node;
+        int step = Math.max(1, ticksPerCommand);
+
+        // Fast-forward gravity waiting process.
+        // We accumulate ticks silently inside this loop until the fall threshold is
+        // met,
+        // rather than deferring to `processNextNode` which would incorrectly prune the
+        // wait-state.
+        while (true) {
+            nextGravityTicks += step;
+            boolean falls = FastGravity.shouldFall(nextGravityTicks, isSoftDrop, config, piecesPlaced);
+
+            if (falls) {
+                Piece fallen = FastPhysics.applyMove(board, currNode.piece, 0, 1);
+                if (fallen != null) {
+                    processNextNode(currNode, fallen, isSoftDrop ? GameInput.SOFT_DROP : GameInput.NONE,
+                            queue, visited, groundedBefore, false, false, 0);
+                } else {
+                    processNextNode(currNode, currNode.piece, isSoftDrop ? GameInput.SOFT_DROP : GameInput.NONE,
+                            queue, visited, groundedBefore, false, false, nextGravityTicks);
+                }
+                break;
+            } else {
+                // If it's grounded, fast-forwarding gravity has no effect on falling, so submit
+                // it immediately.
+                if (groundedBefore) {
+                    processNextNode(currNode, currNode.piece, isSoftDrop ? GameInput.SOFT_DROP : GameInput.NONE,
+                            queue, visited, groundedBefore, false, false, nextGravityTicks);
+                    break;
+                }
+
+                // If in the air but hasn't reached the fall threshold, chain a dummy BFSNode to
+                // capture the wait command.
+                currNode = new BFSNode(currNode.piece, nextGravityTicks, currNode.lockTicks,
+                        currNode.slides, currNode.rotations, currNode.lowestY, currNode,
+                        isSoftDrop ? GameInput.SOFT_DROP : GameInput.NONE);
             }
-            nextGravityTicks = 0;
         }
-
-        processNextNode(node, nextPiece, isSoftDrop ? GameInput.SOFT_DROP : GameInput.NONE,
-                queue, visited, groundedBefore, false, false, nextGravityTicks);
     }
 
     /**

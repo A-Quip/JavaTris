@@ -64,6 +64,7 @@ public class AIInputSource implements PlayerInputSource {
         // 1. HOLD PENDING — piece just changed due to a hold we issued.
         // Skip all other checks; start a fresh search from new piece.
         if (holdPending) {
+            System.out.println("[AI] Hold pending");
             triggerNewSearch(state);
             holdPending = false;
             return emptyInput(player);
@@ -85,6 +86,7 @@ public class AIInputSource implements PlayerInputSource {
                 consecutiveStaleResults = 0;
             }
 
+            System.out.println("[AI] Piece count changed");
             triggerNewSearch(state);
             return emptyInput(player);
         }
@@ -102,6 +104,7 @@ public class AIInputSource implements PlayerInputSource {
                     sequenceExpected = result.expectedPositions;
                     sequenceIndex = 0;
                     phase = Phase.CONSUMING;
+                    System.out.println("[AI] Loaded sequence: " + result.commands);
 
                 } else {
                     // Arrived stale
@@ -112,6 +115,7 @@ public class AIInputSource implements PlayerInputSource {
                         phase = Phase.IDLE;
                         return singleInput(player, GameInput.HARD_DROP);
                     }
+                    System.out.println("[AI] Consecutive stale");
                     triggerNewSearch(state);
                 }
             } catch (Exception e) {
@@ -138,6 +142,7 @@ public class AIInputSource implements PlayerInputSource {
 
             Piece expected = sequenceExpected[sequenceIndex];
             if (!positionMatches(currentPiece, expected)) {
+                System.out.println("[AI] Drift in position");
                 triggerNewSearch(state);
                 return emptyInput(player);
             }
@@ -156,6 +161,8 @@ public class AIInputSource implements PlayerInputSource {
         }
 
         GameInput next = activeSequence.commands.get(sequenceIndex);
+        System.out.println("[AI] Emitting command " + sequenceIndex + "/" + activeSequence.commands.size() + ": " + next
+                + " at " + currentPiece.x + "," + currentPiece.y + " r" + currentPiece.rotation);
 
         // HOLD EXCEPTION: emit hold alone; set flag to skip drift on next tick
         if (next == GameInput.HOLD_PIECE) {

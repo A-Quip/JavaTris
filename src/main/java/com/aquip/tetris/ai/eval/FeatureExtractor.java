@@ -36,7 +36,7 @@ public class FeatureExtractor {
         int tetrisWellDepth = 0;
         int tSpinSetups = 0;
 
-        // 1. Calculate Heights, Holes, Max Height, and Hole Depth
+        // Calculate Heights, Holes, Max Height, and Hole Depth
         for (int x = 0; x < FastBoard.WIDTH; x++) {
             int mask = 1 << x;
             boolean blockFound = false;
@@ -60,7 +60,7 @@ public class FeatureExtractor {
             }
         }
 
-        // 2. Bumpiness & Well Detection (9-0 stacking preference)
+        // Bumpiness & Well Detection (9-0 stacking preference)
         for (int x = 0; x < FastBoard.WIDTH; x++) {
             if (x < FastBoard.WIDTH - 1) {
                 bumpiness += Math.abs(heights[x] - heights[x + 1]);
@@ -80,7 +80,7 @@ public class FeatureExtractor {
             }
         }
 
-        // 4. Transitions
+        // Transitions
         for (int y = 0; y < h; y++) {
             int row = rows[y];
             int lastOccupied = 1;
@@ -112,7 +112,6 @@ public class FeatureExtractor {
             for (int x = 1; x < FastBoard.WIDTH - 1; x++) {
                 // Potential T-center must be empty
                 if ((rows[y] & (1 << x)) == 0) {
-                    // Check 4 corners
                     int corners = 0;
                     if ((rows[y - 1] & (1 << (x - 1))) != 0)
                         corners++; // Top-left
@@ -143,7 +142,7 @@ public class FeatureExtractor {
         score += rowTransitions * weights.rowTransitions;
         score += colTransitions * weights.colTransitions;
 
-        score += totalPoints * weights.linesCleared; // points already cleared in SimNode
+        score += totalPoints * weights.linesCleared;
         score += tetrisWellDepth * weights.tetrisWellDepth;
         score += tSpinSetups * weights.tSpinSetups;
 

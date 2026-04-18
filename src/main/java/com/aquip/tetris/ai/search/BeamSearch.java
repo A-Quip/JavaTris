@@ -82,7 +82,7 @@ public class BeamSearch {
 
         for (BFSPathFinder.Placement p : currentPlacements) {
             MoveSequence path = new MoveSequence(p.commands, p.expectedPositions, snapshot.piecesPlacedCount);
-            beam.add(createInitialNode(initialBoard, snapshot.nextQueue, 0, p, path, true, 
+            beam.add(createInitialNode(initialBoard, snapshot.nextQueue, 0, p, path, true,
                     snapshot.comboCount, snapshot.b2bCount));
         }
 
@@ -101,7 +101,7 @@ public class BeamSearch {
                         Collections.singletonList(GameInput.HOLD_PIECE),
                         new Piece[0],
                         snapshot.piecesPlacedCount);
-                beam.add(createInitialNode(initialBoard, snapshot.nextQueue, nextQueueIndex, p, 
+                beam.add(createInitialNode(initialBoard, snapshot.nextQueue, nextQueueIndex, p,
                         holdOnlyPath, false, snapshot.comboCount, snapshot.b2bCount));
             }
         }
@@ -111,11 +111,7 @@ public class BeamSearch {
             return MoveSequence.HARD_DROP_NOW;
         }
 
-        // --- LEVELS 1+: Future Pieces ---
         // Each depth level fans out into one Callable per beam node.
-        // BFSPathFinder is stateless; per-thread scratch buffers (ThreadLocal
-        // in BFSPathFinder and FastBoard) ensure no sharing between workers.
-        // Results are merged sequentially after invokeAll() returns.
         int maxDepth = config.lookaheadDepth();
 
         for (int depth = 1; depth <= maxDepth; depth++) {
@@ -150,7 +146,7 @@ public class BeamSearch {
                 });
             }
 
-            // Execute in parallel, then merge sequentially (no lock contention)
+            // Execute in parallel, then merge sequentially to prevent lock contention
             Map<FastBoard, SimNode> nextBeamMap = new HashMap<>();
             try {
                 List<Future<List<SimNode>>> futures = searchPool.invokeAll(expansionTasks);
@@ -176,10 +172,8 @@ public class BeamSearch {
             if (nextBeam.isEmpty())
                 break;
 
-            // Sort using the cached score — O(n log n) comparisons with no FeatureExtractor
-            // invocations
-            // Stable Tie-breaker: If scores are tied, prefer the path with fewer commands
-            // (efficiency).
+            // Sort using the cached score — O(n log n) comparisons
+            // If scores are tied, prefer the path with fewer commands
             nextBeam.sort((a, b) -> {
                 int cmp = Double.compare(b.cachedScore, a.cachedScore);
                 if (cmp != 0)
@@ -207,6 +201,7 @@ public class BeamSearch {
         });
 
         MoveSequence best = beam.get(0).rootPath;
+        System.out.println("[Search] Result: " + best.commands + " (Score: " + beam.get(0).cachedScore + ")");
         return best;
     }
 

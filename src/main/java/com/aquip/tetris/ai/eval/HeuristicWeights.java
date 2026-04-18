@@ -16,23 +16,20 @@ public class HeuristicWeights {
     public double rowTransitions = -0.321788;
     public double colTransitions = -0.937997;
     public double linesCleared = 0.760666;
-    
+
     // Setup specific weights
-    public double tetrisWellDepth = 0.5; // Positive reward for maintaining a deep well
-    public double tSpinSetups = 2.0;     // Massive reward for having a T-spin setup
-    
-    public double combo = 1.0;          // Reward per combo level
-    public double b2b = 1.5;            // Reward for maintaining Back-to-Back
+    public double tetrisWellDepth = 0.5;
+    public double tSpinSetups = 2.0;
+
+    public double combo = 1.0;
+    public double b2b = 1.5;
 
     public HeuristicWeights() {
     }
 
-    /**
-     * Constructs weights with specific values.
-     */
-    public HeuristicWeights(double aggregateHeight, double maxHeight, double bumpiness, 
-                            double holes, double holeDepth, double rowTransitions, 
-                            double colTransitions, double linesCleared) {
+    public HeuristicWeights(double aggregateHeight, double maxHeight, double bumpiness,
+            double holes, double holeDepth, double rowTransitions,
+            double colTransitions, double linesCleared) {
         this.aggregateHeight = aggregateHeight;
         this.maxHeight = maxHeight;
         this.bumpiness = bumpiness;
