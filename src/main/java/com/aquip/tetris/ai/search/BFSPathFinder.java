@@ -139,7 +139,7 @@ public class BFSPathFinder {
      * @return A list of unique legal placements.
      */
     public List<Placement> findAll(FastBoard board, Piece currentPiece,
-            LockState lock, GravityState gravity, int piecesPlaced) {
+            LockState lock, GravityState gravity, int piecesPlaced, int ticksPerCommand) {
 
         // Acquire and reset per-thread arrays (#1, #3)
         boolean[] visited = VISITED.get();
@@ -177,13 +177,13 @@ public class BFSPathFinder {
             }
 
             // --- TRANSITIONS ---
-            tryMove(board, node, -1, 0, GameInput.MOVE_LEFT, queue, visited, grounded);
-            tryMove(board, node, 1, 0, GameInput.MOVE_RIGHT, queue, visited, grounded);
-            tryRotate(board, node, 1, GameInput.ROTATE_CW, queue, visited, grounded);
-            tryRotate(board, node, -1, GameInput.ROTATE_CCW, queue, visited, grounded);
-            tryRotate(board, node, 2, GameInput.ROTATE_180, queue, visited, grounded);
-            tryGravity(board, node, false, queue, visited, piecesPlaced, grounded);
-            tryGravity(board, node, true, queue, visited, piecesPlaced, grounded);
+            tryMove(board, node, -1, 0, GameInput.MOVE_LEFT, queue, visited, grounded, ticksPerCommand);
+            tryMove(board, node, 1, 0, GameInput.MOVE_RIGHT, queue, visited, grounded, ticksPerCommand);
+            tryRotate(board, node, 1, GameInput.ROTATE_CW, queue, visited, grounded, ticksPerCommand);
+            tryRotate(board, node, -1, GameInput.ROTATE_CCW, queue, visited, grounded, ticksPerCommand);
+            tryRotate(board, node, 2, GameInput.ROTATE_180, queue, visited, grounded, ticksPerCommand);
+            tryGravity(board, node, false, queue, visited, piecesPlaced, grounded, ticksPerCommand);
+            tryGravity(board, node, true, queue, visited, piecesPlaced, grounded, ticksPerCommand);
         }
 
         return results;
@@ -193,28 +193,28 @@ public class BFSPathFinder {
 
     private void tryMove(FastBoard board, BFSNode node, int dx, int dy,
             GameInput input, Queue<BFSNode> queue, boolean[] visited,
-            boolean groundedBefore) {
+            boolean groundedBefore, int ticksPerCommand) {
         Piece next = FastPhysics.applyMove(board, node.piece, dx, dy);
         if (next != null) {
             processNextNode(node, next, input, queue, visited,
-                    groundedBefore, true, false, node.gravityTicks);
+                    groundedBefore, true, false, node.gravityTicks + ticksPerCommand);
         }
     }
 
     private void tryRotate(FastBoard board, BFSNode node, int step,
             GameInput input, Queue<BFSNode> queue, boolean[] visited,
-            boolean groundedBefore) {
+            boolean groundedBefore, int ticksPerCommand) {
         Piece next = FastPhysics.tryRotate(board, node.piece, step);
         if (next != null) {
             processNextNode(node, next, input, queue, visited,
-                    groundedBefore, false, true, node.gravityTicks);
+                    groundedBefore, false, true, node.gravityTicks + ticksPerCommand);
         }
     }
 
     private void tryGravity(FastBoard board, BFSNode node, boolean isSoftDrop,
             Queue<BFSNode> queue, boolean[] visited,
-            int piecesPlaced, boolean groundedBefore) {
-        int nextGravityTicks = node.gravityTicks + 1;
+            int piecesPlaced, boolean groundedBefore, int ticksPerCommand) {
+        int nextGravityTicks = node.gravityTicks + ticksPerCommand;
         Piece nextPiece = node.piece;
 
         if (FastGravity.shouldFall(nextGravityTicks, isSoftDrop, config, piecesPlaced)) {
@@ -225,7 +225,7 @@ public class BFSPathFinder {
             nextGravityTicks = 0;
         }
 
-        processNextNode(node, nextPiece, isSoftDrop ? GameInput.SOFT_DROP : null,
+        processNextNode(node, nextPiece, isSoftDrop ? GameInput.SOFT_DROP : GameInput.NONE,
                 queue, visited, groundedBefore, false, false, nextGravityTicks);
     }
 

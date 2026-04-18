@@ -178,6 +178,12 @@ public class AIInputSource implements PlayerInputSource {
             return batchInput(player, next, hardDrop);
         }
 
+        if (next == GameInput.NONE) {
+            sequenceIndex++;
+            ticksSinceLastCommand = 0;
+            return emptyInput(player);
+        }
+
         sequenceIndex++;
         ticksSinceLastCommand = 0;
         return singleInput(player, next);
@@ -196,7 +202,7 @@ public class AIInputSource implements PlayerInputSource {
 
     private boolean positionMatches(Piece actual, Piece expected) {
         return actual.x == expected.x
-                && actual.y == expected.y
+                && actual.y >= expected.y
                 && actual.rotation == expected.rotation;
     }
 

@@ -81,7 +81,7 @@ public class BeamSearch {
         List<BFSPathFinder.Placement> currentPlacements = pathFinder.findAll(
                 initialBoard, snapshot.currentPiece,
                 getLockState(snapshot), getGravityState(snapshot),
-                snapshot.piecesPlacedCount);
+                snapshot.piecesPlacedCount, config.ticksPerCommand());
 
         for (BFSPathFinder.Placement p : currentPlacements) {
             MoveSequence path = new MoveSequence(p.commands, p.expectedPositions, snapshot.piecesPlacedCount);
@@ -96,7 +96,7 @@ public class BeamSearch {
             Piece heldPiece = new Piece(heldType, 0, 3, 3); // Standard spawn position
             List<BFSPathFinder.Placement> heldPlacements = pathFinder.findAll(
                     initialBoard, heldPiece, new LockState(), new GravityState(),
-                    snapshot.piecesPlacedCount);
+                    snapshot.piecesPlacedCount, config.ticksPerCommand());
 
             for (BFSPathFinder.Placement p : heldPlacements) {
                 MoveSequence holdOnlyPath = new MoveSequence(
@@ -137,7 +137,8 @@ public class BeamSearch {
                             node.currentPiece,
                             node.lockState,
                             node.gravityState,
-                            snapshot.piecesPlacedCount + capturedDepth);
+                            snapshot.piecesPlacedCount + capturedDepth,
+                            config.ticksPerCommand());
 
                     for (BFSPathFinder.Placement p : placements) {
                         SimNode next = node.applyPlacement(p, snapshot.nextQueue);

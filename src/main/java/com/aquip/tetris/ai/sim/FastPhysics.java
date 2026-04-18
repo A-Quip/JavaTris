@@ -32,34 +32,47 @@ public class FastPhysics {
         return false;
     }
 
-    /**
-     * Attempts to rotate a piece using SRS kick tables.
-     * 
-     * @return The new piece state if rotation was successful, null otherwise.
-     */
     public static Piece tryRotate(FastBoard board, Piece piece, int rotationStep) {
-        int from = piece.rotation;
-        int to = (from + rotationStep) & 3;
+        Piece current = piece;
+        int rot = rotationStep;
 
-        var registry = PieceRegistry.getInstance();
-        int[][] kicks = registry.getKicks(piece.type, from, to);
+        while (rot != 0) {
+            int step = (rot > 0) ? 1 : -1;
+            int from = current.rotation;
+            int to = (from + step) & 3;
 
-        for (int[] kick : kicks) {
-            int dx = kick[0];
-            int dy = -kick[1]; // Engine uses inverted Y for SRS kicks
+            var registry = PieceRegistry.getInstance();
+            int[][] kicks = registry.getKicks(current.type, from, to);
 
-            Piece candidate = new Piece(
-                    piece.type,
-                    to,
-                    piece.x + dx,
-                    piece.y + dy);
+            Piece rotated = null;
+            for (int[] kick : kicks) {
+                int dx = kick[0];
+                int dy = -kick[1]; // Engine uses inverted Y for SRS kicks
 
-            if (!collides(board, candidate)) {
-                return candidate;
+                Piece candidate = new Piece(
+                        current.type,
+                        to,
+                        current.x + dx,
+                        current.y + dy);
+
+                if (!collides(board, candidate)) {
+                    rotated = candidate;
+                    break;
+                }
             }
+
+            if (rotated == null) {
+                break; // Stop rotating if we hit a collision
+            }
+            current = rotated;
+            rot -= step;
         }
 
-        return null;
+        // Return null only if no rotation was possible at all
+        if (current == piece) {
+            return null;
+        }
+        return current;
     }
 
     /**

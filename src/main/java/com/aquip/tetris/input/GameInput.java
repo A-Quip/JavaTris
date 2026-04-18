@@ -9,6 +9,7 @@ public enum GameInput {
     ROTATE_CW,
     ROTATE_CCW,
     ROTATE_180, //unused
+    NONE, // Used for tick waiting (gravity simulation)
     CHANGE_TARGET, //unused
 
     FORFEIT

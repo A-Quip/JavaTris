@@ -46,6 +46,7 @@ public class InputHandler {
             case ROTATE_CW -> ctx.rotation += 1;
             case ROTATE_CCW -> ctx.rotation -= 1;
             case ROTATE_180 -> ctx.rotation += 2;
+            case NONE -> {}
 
             case FORFEIT -> player.status.alive = false;
         }
