@@ -41,3 +41,10 @@ tasks.jar {
         attributes["Main-Class"] = "com.aquip.tetris.Main"
     }
 }
+
+tasks.register<JavaExec>("runEval") {
+    group = "verification"
+    description = "Runs the AI evaluation suite with a live preview window."
+    classpath = sourceSets["test"].runtimeClasspath
+    mainClass.set("com.aquip.tetris.eval.EvalMain")
+}

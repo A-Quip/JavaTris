@@ -11,7 +11,7 @@ public class MenuState {
     public MenuState() {
         this.screen = MenuOption.PLAY;
         this.selectionIndex = 0;
-        this.difficultyIndex = Difficulty.MEDIUM.ordinal();
+        this.difficultyIndex = Difficulty.SUPERHUMAN.ordinal();
     }
 
     public GameMode selectedMode() {

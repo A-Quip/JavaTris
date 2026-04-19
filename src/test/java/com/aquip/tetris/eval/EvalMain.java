@@ -37,7 +37,7 @@ public class EvalMain {
         });
 
         // Give Swing a moment to show the window before ticks start
-        Thread.sleep(2000);
+        Thread.sleep(1000);
 
         EvalSuite suite = new EvalSuite(config, aiConfig)
                 .addAll(ScenarioLibrary.standard());

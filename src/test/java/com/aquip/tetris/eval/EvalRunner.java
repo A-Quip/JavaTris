@@ -59,6 +59,16 @@ public class EvalRunner {
         injectBoard(scenario, ps);
         injectQueue(scenario, ps);
 
+        // Briefly pause at the start so the user can see the initial board state
+        if (renderCallback != null) {
+            renderCallback.accept(engine.state);
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
         EvalResult.Builder result = new EvalResult.Builder(scenario.name);
 
         InputFrame emptyFrame = new InputFrame();
