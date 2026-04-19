@@ -9,25 +9,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Runs a batch of {@link EvalScenario}s and prints a formatted summary.
- *
- * <h3>Usage</h3>
- * 
- * <pre>
- * EvalSuite suite = new EvalSuite(config, aiConfig)
- *         .add(ScenarioLibrary.tSpinDouble())
- *         .add(ScenarioLibrary.tetrisClean())
- *         .add(ScenarioLibrary.garbageClear(4));
- *
- * // headless:
- * suite.runAll(null);
- *
- * // with rendering (one scenario at a time, rendered live):
- * suite.runAll(state -> {
- *     gamePanel.setState(state);
- *     gamePanel.repaint();
- * });
- * </pre>
+ * Runs a batch of EvalScenarios and prints a formatted summary.
  */
 public class EvalSuite {
 

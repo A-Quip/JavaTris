@@ -37,10 +37,8 @@ public class EvalMain {
         });
 
         // Give Swing a moment to show the window before ticks start
-        Thread.sleep(200);
+        Thread.sleep(2000);
 
-        // Each tick calls the callback on the main thread, then Swing repaints
-        // on the EDT via repaint() — which is thread-safe.
         EvalSuite suite = new EvalSuite(config, aiConfig)
                 .addAll(ScenarioLibrary.standard());
 
@@ -49,8 +47,9 @@ public class EvalMain {
             gamePanel.repaint();
         });
 
-        // ---- Done -----------------------------------------------------------
         frame.setTitle("JavaTris — AI Eval (Complete)");
+
+        frame.dispose();
         System.exit(0);
     }
 }

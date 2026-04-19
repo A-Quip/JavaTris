@@ -7,7 +7,6 @@ package com.aquip.tetris.ai.eval;
  */
 public class HeuristicWeights {
 
-    // Common baseline weights for heuristic-based Tetris AIs
     public double aggregateHeight = -0.510066;
     public double maxHeight = -0.124312;
     public double bumpiness = -0.184483;
@@ -17,7 +16,6 @@ public class HeuristicWeights {
     public double colTransitions = -0.937997;
     public double linesCleared = 0.760666;
 
-    // Setup specific weights
     public double tetrisWellDepth = 0.5;
     public double tSpinSetups = 2.0;
 

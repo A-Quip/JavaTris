@@ -18,45 +18,8 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 /**
- * Runs a single {@link EvalScenario} against the AI and returns an
- * {@link EvalResult} with full metrics.
- *
- * <h3>Tick delay</h3>
- * The AI search runs on a background thread
- * ({@link com.aquip.tetris.ai.AIThread}).
- * If the tick loop runs at full CPU speed, pieces lock from gravity before the
- * search ever finishes. {@code tickDelayMs} (default 16 ms) adds a sleep after
- * every tick, giving the AI thread time to respond. At 16 ms per tick the lock
- * timer (45 ticks) allows ~720 ms of search time — enough for any difficulty.
- *
- * <p>
- * Lower the delay to run faster at the cost of the AI not always acting in
- * time:
- * 
- * <pre>
- *   new EvalRunner(config, aiConfig).withTickDelay(5)  // 3× faster, may miss slow searches
- *   new EvalRunner(config, aiConfig).withTickDelay(0)  // headless speed-run, AI mostly idle
- * </pre>
- *
- * <h3>Rendering</h3>
- * Pass a non-null {@code renderCallback} to hook into the game loop:
- * 
- * <pre>
- * runner.run(scenario, state -> {
- *     gamePanel.setState(state);
- *     gamePanel.repaint();
- * });
- * runner.run(scenario, null); // headless
- * </pre>
- *
- * <h3>Going fully headless later</h3>
- * <ol>
- * <li>Pass {@code null} for {@code renderCallback}.</li>
- * <li>Remove the JFrame setup from EvalMain.</li>
- * <li>Optionally set {@code System.setProperty("java.awt.headless","true")}
- * before
- * any AWT class loads.</li>
- * </ol>
+ * Runs a single EvalScenario against the AI and returns an EvalResult with full
+ * metrics.
  */
 public class EvalRunner {
 
@@ -68,7 +31,7 @@ public class EvalRunner {
      * Must be ≥ the time a BeamSearch takes / lockTick to guarantee the AI acts.
      * Default 16 ms matches the game's 60 fps timer, giving 720 ms per lock cycle.
      */
-    private int tickDelayMs = 16;
+    private int tickDelayMs = 22;
 
     public EvalRunner(ConfigState config, AIConfig aiConfig) {
         this.config = config;

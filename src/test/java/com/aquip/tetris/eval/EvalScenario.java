@@ -4,30 +4,6 @@ import com.aquip.tetris.piece.PieceType;
 
 /**
  * Describes a board scenario for the AI to solve.
- *
- * <p>
- * Board patterns are defined as string arrays where:
- * <ul>
- * <li>{@code '#'} = filled cell (colour 1)</li>
- * <li>{@code ' '} = empty cell</li>
- * </ul>
- * Rows are ordered top-to-bottom; the pattern is bottom-aligned on the board.
- *
- * <p>
- * Example — a T-Spin Double setup:
- * 
- * <pre>
- * EvalScenario scenario = EvalScenario.builder("TSD Setup")
- *         .board(
- *                 "## #######",
- *                 "## #######",
- *                 "###  #####",
- *                 "#### #####")
- *         .queue(PieceType.T)
- *         .maxPieces(3)
- *         .requireLines(2)
- *         .build();
- * </pre>
  */
 public class EvalScenario {
 

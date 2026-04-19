@@ -21,16 +21,16 @@ import java.util.concurrent.Future;
  * Explores possible move sequences for the current and upcoming pieces,
  * selecting the path that results in the most favorable board state.
  *
- * Parallel beam expansion</b>: Each beam node's BFS search is
+ * Parallel beam expansion: Each beam node's BFS search is
  * completely independent of all others (immutable board input, stateless
  * pathfinder, thread-local scratch buffers). A dedicated
- * {@link ForkJoinPool} runs all node expansions in parallel at each
+ * ForkJoinPool runs all node expansions in parallel at each
  * depth level. Results are merged sequentially after the parallel phase
  * to avoid any lock contention on the deduplication map.
- * Cached heuristic score: {@code heuristic.evaluate()} was
+ * Cached heuristic score: heuristic.evaluate() was
  * previously called O(n log n) times during sorting and again for
  * logging. The score is now computed once per node during the parallel
- * expansion phase and stored in {@link SimNode#cachedScore}, making all
+ * expansion phase and stored in SimNode.cachedScore, making all
  * subsequent sort/log operations trivially cheap.
  */
 public class BeamSearch {

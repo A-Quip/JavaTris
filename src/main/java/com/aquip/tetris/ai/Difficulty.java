@@ -6,7 +6,7 @@ public enum Difficulty {
     EASY(3, 1, 3000, 12),
     MEDIUM(5, 2, 2000, 9),
     HARD(10, 3, 1000, 7),
-    SUPERHUMAN(50, 5, 0, 1);
+    SUPERHUMAN(30, 5, 0, 1);
 
     public final int beamWidth;
     public final int lookaheadDepth;

@@ -97,18 +97,17 @@ public class EvalResult {
 
     @Override
     public String toString() {
-        String status = passed ? "PASS ✓" : "FAIL ✗";
-        return String.format(
-                "[%s] %-30s | Lines: %3d | Score: %6d | Pieces: %3d | Ticks: %5d | L/P: %.2f | A/P: %.2f | %s",
-                termination.name().charAt(0),
-                scenarioName,
-                totalLinesCleared,
-                totalScore,
-                piecesPlaced,
-                totalTicks,
-                linesPerPiece,
-                attackPerPiece,
-                status);
+        String statusIcon = passed ? "PASS" : "FAIL";
+        return """
+                +---------------------------------------------------+
+                       | STATUS:  %-39s  |
+                       | Lines:  %5d  |  Pieces: %5d  |  L/P: %8.2f |
+                       | Score:  %5d  |  Ticks:  %5d  |  A/P: %8.2f |
+                       +---------------------------------------------------+
+                       """.formatted(
+                statusIcon,
+                totalLinesCleared, piecesPlaced, linesPerPiece,
+                totalScore, totalTicks, attackPerPiece);
     }
 
     // =========================================================================

@@ -37,9 +37,6 @@ public class AIInputSource implements PlayerInputSource {
     private int consecutiveStaleResults = 0;
     private long searchStartedAtMs = 0;
 
-    // Expected piece state at each command index — for Drift Guard.
-    // sequenceExpected[i] = the (x, y, rotation) the piece should be at
-    // BEFORE command i is emitted. Populated when a sequence is loaded.
     private Piece[] sequenceExpected = null;
 
     public AIInputSource(Player player, AIThread aiThread, AIConfig config) {
@@ -61,7 +58,7 @@ public class AIInputSource implements PlayerInputSource {
         Piece currentPiece = state.piece.currentPiece;
         ticksSinceLastCommand++;
 
-        // 1. HOLD PENDING — piece just changed due to a hold we issued.
+        // Hold Pending
         // Skip all other checks; start a fresh search from new piece.
         if (holdPending) {
             // System.out.println("[AI] Hold pending");
@@ -70,8 +67,7 @@ public class AIInputSource implements PlayerInputSource {
             return emptyInput(player);
         }
 
-        // 2. STALE CHECK — piece count changed; a new piece has spawned.
-        // Primary replanning trigger.
+        // Stale Check
         if (currentPieces != lastKnownPiecesPlaced && currentPiece != null) {
             lastKnownPiecesPlaced = currentPieces;
 
@@ -91,14 +87,14 @@ public class AIInputSource implements PlayerInputSource {
             return emptyInput(player);
         }
 
-        // 3. COLLECT SEARCH RESULT (non-blocking)
+        // Collect Search Result
         if (phase == Phase.SEARCHING && pendingResult != null && pendingResult.isDone()) {
             try {
                 MoveSequence result = pendingResult.get();
 
                 if (result != null && (result.piecesPlacedWhenGenerated == currentPieces
                         || result.piecesPlacedWhenGenerated == -1)) {
-                    // Fresh result or emergency sentinel — load it
+                    // Fresh result or emergency sentinel —> load it
                     consecutiveStaleResults = 0;
                     activeSequence = result;
                     sequenceExpected = result.expectedPositions;
@@ -124,16 +120,14 @@ public class AIInputSource implements PlayerInputSource {
             pendingResult = null;
         }
 
-        // 4. DECISION DELAY GATE (artificial lag for difficulty)
+        // Artificial lag
         if (phase == Phase.CONSUMING) {
             long elapsed = System.currentTimeMillis() - searchStartedAtMs;
             if (elapsed < config.decisionDelayMs())
                 return emptyInput(player);
         }
 
-        // 5. DRIFT GUARD
-        // Fires only if the engine piece is in a state that does NOT
-        // exist in the current planned sequence at the current index.
+        // Drift Guard
         if (phase == Phase.CONSUMING && currentPiece != null
                 && sequenceExpected != null
                 && sequenceIndex < sequenceExpected.length) {
@@ -146,13 +140,13 @@ public class AIInputSource implements PlayerInputSource {
             }
         }
 
-        // 6. PACING GATE
+        // Pacing Gate
         if (phase != Phase.CONSUMING)
             return emptyInput(player);
         if (ticksSinceLastCommand < config.ticksPerCommand())
             return emptyInput(player);
 
-        // 7. EMIT NEXT COMMAND(S)
+        // Emit Next Commands
         if (activeSequence == null || sequenceIndex >= activeSequence.commands.size()) {
             phase = Phase.IDLE;
             return emptyInput(player);
