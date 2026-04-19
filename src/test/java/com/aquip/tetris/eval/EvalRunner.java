@@ -63,7 +63,7 @@ public class EvalRunner {
         if (renderCallback != null) {
             renderCallback.accept(engine.state);
             try {
-                Thread.sleep(3000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
