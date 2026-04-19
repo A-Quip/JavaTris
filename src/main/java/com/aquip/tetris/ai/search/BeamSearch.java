@@ -201,7 +201,8 @@ public class BeamSearch {
         });
 
         MoveSequence best = beam.get(0).rootPath;
-        System.out.println("[Search] Result: " + best.commands + " (Score: " + beam.get(0).cachedScore + ")");
+        // System.out.println("[Search] Result: " + best.commands + " (Score: " +
+        // beam.get(0).cachedScore + ")");
         return best;
     }
 
