@@ -62,7 +62,7 @@ public class QueueHandler {
 
         PieceType held = player.next.held;
 
-        // First hold → store and spawn new
+        // First hold -> store and spawn new
         if (held == null) {
             player.next.held = current.type;
             player.piece.currentPiece = null;
